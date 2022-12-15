@@ -19,32 +19,33 @@ class Tile
 
 		void	build();
 		void	spawn(int amount);
-		void	message(const std::string& message) const;
 
 		void	read();
 
 		int		distance(const Tile& to) const;
 		int		distance(int x, int y) const;
-
-        int scrapsAround();
+        int 	scrapsAround();
 
 		bool	isMe() const;
 		bool	isEnemy() const;
 		bool	isNeutral() const;
 
-		Tile *	left() const;
-		Tile *	right() const;
-		Tile *	up() const;
-		Tile *	down() const;
+		bool	canUse() const;
+		bool	canUse(size_t nb_of_turns) const;
+
+
+		Tile *	left();
+		Tile *	right();
+		Tile *	up();
+		Tile *	down();
 
 		void	setLeft(Tile *tile);
 		void	setRight(Tile *tile);
 		void	setUp(Tile *tile);
 		void	setDown(Tile *tile);
 
-
-		int _col;
-		int _row;
+		int _x;
+		int _y;
 		int _scrap_amount;
 		int _owner; // 1 = me, 0 = foe, -1 = neutral
 		int _units;

@@ -8,6 +8,7 @@ CXXFLAGS	=	-Wall -Wextra #-Werror
 
 #ADD YOUR SOURCES BELOW WITHOUT THE SOURCE PREFIX MAIN.C GIVEN AS EXAMPLE
 SRCS		=	main.cpp \
+				utils.cpp \
 				Tile.cpp \
 				Map.cpp
 

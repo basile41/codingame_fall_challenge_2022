@@ -24,5 +24,6 @@ void	debug(const T1& value1, const T2& value2)
 	std::cerr << value1 << " " << value2 << std::endl;
 };
 
+void	message(std::string message);
 
 #endif /* INCLUDES_HPP */

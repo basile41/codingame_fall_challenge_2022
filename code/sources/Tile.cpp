@@ -1,6 +1,6 @@
 #include "Tile.hpp"
 
-Tile::Tile(int x, int y) : _col(x), _row(y)
+Tile::Tile(int x, int y) : _x(x), _y(y)
 {
 }
 
@@ -13,8 +13,8 @@ Tile &	Tile::operator=(const Tile& rhs)
 {
 	if (this != &rhs)
 	{
-		_col = rhs._col;
-		_row = rhs._row;
+		_x = rhs._x;
+		_y = rhs._y;
 		_scrap_amount = rhs._scrap_amount;
 		_owner = rhs._owner;
 		_units = rhs._units;
@@ -22,6 +22,10 @@ Tile &	Tile::operator=(const Tile& rhs)
 		_can_build = rhs._can_build;
 		_can_spawn = rhs._can_spawn;
 		_in_range_of_recycler = rhs._in_range_of_recycler;
+		_left = rhs._left;
+		_right = rhs._right;
+		_up = rhs._up;
+		_down = rhs._down;
 	}
 	return *this;
 }
@@ -29,7 +33,7 @@ Tile &	Tile::operator=(const Tile& rhs)
 //Methods
 void    Tile::move(int amount, const Tile& to)
 {
-	std::cout << "MOVE " << amount << *this << to._col << " " << to._row << ";";
+	std::cout << "MOVE " << amount << *this << to._x << " " << to._y << ";";
 }
 void    Tile::move(int amount, int x, int y)
 {
@@ -44,10 +48,6 @@ void	Tile::spawn(int amount)
 {
 	std::cout << "SPAWN " << amount << *this << ";";
 }
-void	Tile::message(const std::string& message) const
-{
-	std::cout << "MESSAGE " << message << ";";
-}
 
 void	Tile::read()
 {
@@ -56,11 +56,11 @@ void	Tile::read()
 
 int		Tile::distance(const Tile& to) const
 {
-	return (abs(_col - to._col) + abs(_row - to._row));
+	return (abs(_x - to._x) + abs(_y - to._y));
 }
 int		Tile::distance(int x, int y) const
 {
-	return (abs(_col - x) + abs(_row - y));
+	return (abs(_x - x) + abs(_y - y));
 }
 
 int 	Tile::scrapsAround()
@@ -86,19 +86,30 @@ bool	Tile::isNeutral() const
 	return (_owner == -1);
 }
 
-Tile *	Tile::left() const
+bool	Tile::canUse() const
+{
+	return ( canUse(1) );
+}
+bool	Tile::canUse(size_t nb_of_turns) const
+{
+	return ( _scrap_amount && !_recycler &&
+			 (!_in_range_of_recycler || _scrap_amount > nb_of_turns ));
+}
+
+
+Tile *	Tile::left()
 {
 	return _left;
 }
-Tile *	Tile::right() const
+Tile *	Tile::right()
 {
 	return _right;
 }
-Tile *	Tile::up() const
+Tile *	Tile::up()
 {
 	return _up;
 }
-Tile *	Tile::down() const
+Tile *	Tile::down()
 {
 	return _down;
 }
@@ -123,6 +134,6 @@ void	Tile::setDown(Tile *tile)
 
 std::ostream& operator<<(std::ostream& os, const Tile& t)
 {
-	os << " " << t._col << " " << t._row << " ";
+	os << " " << t._x << " " << t._y << " ";
 	return os;
 }

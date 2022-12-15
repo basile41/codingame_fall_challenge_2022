@@ -25,46 +25,45 @@ Map::Map(int width, int height) : _tiles(height), _width(width), _height(height)
 void	Map::read()
 {
 	std::cin >> _my_matter >> _opp_matter; std::cin.ignore();
+	_my_tiles.clear();
+	_opp_tiles.clear();
 	for	(std::vector<Tile> &row: _tiles)
 	{
 		for (Tile &tile : row)
-			tile.read();
-	}
-}
-
-Tile &	Map::tileAt(int x, int y)
-{
-	return _tiles[x][y];
-}
-
-
-Tile &	Map::center()
-{
-	return tileAt(_width / 2, _height / 2);
-}
-
-const Tile &	Map::closestEnemy( const Tile& to ) const
-{
-	Tile const *closest;
-	int	min = 999;
-	for (auto& row : _tiles)
-	{
-		for (auto& tile : row)
 		{
-			if (tile.isEnemy() && tile._units && tile.distance(to) < min)
-			{
-				min = tile.distance(to);
-				closest = &tile;
-				debug("min = ", min);
-			}
+			tile.read();
+			if (tile.isEnemy())
+				_opp_tiles.push_back(&tile);
+			if (tile.isMe())
+				_my_tiles.push_back(&tile);
 		}
 	}
-	debug("closest : ", *closest);
-	return (*closest);
 }
 
 
-int		Map::_id(const Tile& tile) const
+Tile *	Map::center()
 {
-	return (tile._row * _width + tile._col);
+	return &_tiles[_height / 2][_width / 2];
+}
+
+Tile *	Map::closestEnemy( Tile& to )
+{
+	Tile	*closest;
+	int	min = 999;
+	for (auto& tile : _opp_tiles)
+	{
+		if (tile->_units && tile->distance(to) < min)
+		{
+			min = tile->distance(to);
+			closest = tile;
+		}
+	}
+	return (closest);
+}
+
+
+
+Tile *	Map::getTile(int x, int y)
+{
+	return &_tiles[x][y];
 }

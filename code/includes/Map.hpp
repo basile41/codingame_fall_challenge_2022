@@ -12,23 +12,23 @@ class Map
 
 		void	read();
 
-		Tile &	tileAt(int x, int y);
+		Tile *	center();
 
-		Tile &	center();
+		Tile *	closestEnemy( Tile& to );
+		Tile *	closestUnit( Tile& to);
 
-		const Tile &closestEnemy( const Tile& to ) const;
+		Tile *	getTile(int x, int y);
 
 
-
-	private:
-		int		_id(const Tile& tile) const;
 
 	public:
 		std::vector<std::vector<Tile> >	_tiles;
-		int 					_width;
-		int 					_height;
-		int						_my_matter;
-		int						_opp_matter;
+		std::vector<Tile*>				_my_tiles;
+		std::vector<Tile*>				_opp_tiles;
+		int 							_width;
+		int 							_height;
+		int								_my_matter;
+		int								_opp_matter;
 };
 
 #endif /* MAP_HPP */
