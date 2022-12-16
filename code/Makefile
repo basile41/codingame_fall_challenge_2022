@@ -10,13 +10,13 @@ CXXFLAGS	=	-Wall -Wextra #-Werror
 SRCS		=	main.cpp \
 				utils.cpp \
 				Tile.cpp \
-				Map.cpp
+				Data.cpp
 
 
 #IF YOU HAVE HEADER FILES YOU ABSOLUTELY NEED TO ADD THEM IN THE INC_FILES VAR
 INC_FILES	= 	includes.hpp \
 				Tile.hpp \
-				Map.hpp
+				Data.hpp
 
 INC_PATH	=	includes/
 INC			=	-I $(INC_PATH)
@@ -49,7 +49,7 @@ $(OBJS_PATH)%.o:	$(SRCS_PATH)%.cpp
 				
 
 clean:
-		rm -rf $(OBJS_DIR)
+		rm -rf $(OBJS_PATH)
 
 fclean:		clean
 		rm -rf $(NAME)
