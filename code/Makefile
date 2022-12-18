@@ -10,7 +10,8 @@ CXXFLAGS	=	-Wall -Wextra #-Werror
 SRCS		=	main.cpp \
 				utils.cpp \
 				Tile.cpp \
-				Data.cpp
+				Data.cpp \
+				test.cpp
 
 
 #IF YOU HAVE HEADER FILES YOU ABSOLUTELY NEED TO ADD THEM IN THE INC_FILES VAR

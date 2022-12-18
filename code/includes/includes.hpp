@@ -7,6 +7,7 @@
 # include <string>
 # include <sstream>
 # include <vector>
+# include <deque>
 # include <algorithm>
 
 # include "Tile.hpp"
@@ -34,5 +35,7 @@ void	debug(const T1& value1, const T2& value2)
 class Tile;
 
 void	message(std::string message);
+
+std::vector<Tile*> setTerritory(Tile*& s);
 
 #endif /* INCLUDES_HPP */

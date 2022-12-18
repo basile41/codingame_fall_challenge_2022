@@ -2,35 +2,8 @@
 # define DATA_HPP
 
 
+# include "Tile.hpp"
 # include "includes.hpp"
-// # include "Tile.hpp"
-
-class Tile
-{
-	public:
-
-		int		id;
-		int		x;
-		int		y;
-		int		scrap_amount;
-		int		owner; // 1 = me, 0 = foe, -1 = neutral
-		int		units;
-		bool	recycler;
-		bool	can_build;
-		bool	can_spawn;
-		bool	in_range_of_recycler;
-
-
-		//Methods
-		void    move(int amount, const Tile& to);
-		void    move(int amount, int x, int y);
-		void	build();
-		void	spawn(int amount);
-
-		void	read();
-};
-
-std::ostream& operator<<(std::ostream& os, const Tile& t);
 
 class Data
 {
@@ -58,9 +31,11 @@ class Data
 		Tile *	closestEnemy( Tile& to );
 		Tile *	closestUnit( Tile& to);
 
+		void	setNeighbors();
+
 		Tile *	getTile(int x, int y);
-
-
+		Tile *	getValidTile(int x, int y);
+		Tile *	getUsableTile(int x, int y);
 
 };
 

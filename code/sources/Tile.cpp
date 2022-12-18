@@ -1,3 +1,4 @@
+#include "includes.hpp"
 #include "Tile.hpp"
 
 
@@ -23,6 +24,18 @@ void	Tile::spawn(int amount)
 void	Tile::read()
 {
 	std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler; std::cin.ignore();
+}
+
+void Tile::debug() const
+{
+	::debug("id :", id);
+	std::cerr << std::endl;
+	::debug("x :", x);
+	::debug("y :", y);
+	::debug("scrap_amount :", scrap_amount);
+	::debug("owner :", owner);
+	::debug("units :", units);
+	std::cerr << std::endl;
 }
 
 
