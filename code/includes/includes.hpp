@@ -1,5 +1,5 @@
 #ifndef INCLUDES_HPP
-#define INCLUDES_HPP
+# define INCLUDES_HPP
 
 # include <bits/types/wint_t.h>
 # include <cstddef>
@@ -7,11 +7,13 @@
 # include <string>
 # include <sstream>
 # include <vector>
-# include <deque>
+# include <queue>
+# include <set>
 # include <algorithm>
 
 # include "Tile.hpp"
 # include "Data.hpp"
+# include "Graph.hpp"
 
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
@@ -19,6 +21,10 @@ static constexpr int NONE = -1;
 
 static constexpr int LEFT = 0;
 static constexpr int RIGHT = 1;
+
+class Tile;
+class Data;
+class Graph;
 
 template<typename T>
 void	debug(const T& value)
@@ -37,5 +43,7 @@ class Tile;
 void	message(std::string message);
 
 std::vector<Tile*> setTerritory(Tile*& s);
+
+void bfs(Graph &graph, int startId);
 
 #endif /* INCLUDES_HPP */

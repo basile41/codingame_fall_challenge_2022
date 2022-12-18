@@ -18,12 +18,7 @@ class Tile
 		bool	can_build;
 		bool	can_spawn;
 		bool	in_range_of_recycler;
-		bool	explored;
 
-		Tile*	left;
-		Tile*	right;
-		Tile*	top;
-		Tile*	bottom;
 
 		//Methods
 		void    move(int amount, const Tile& to);
@@ -31,10 +26,6 @@ class Tile
 		void	build();
 		void	spawn(int amount);
 
-		std::vector<Tile*> neighbors()
-		{
-			return std::vector<Tile*>({left, right, top, bottom});
-		}
 
 		void	read();
 		void	debug() const;

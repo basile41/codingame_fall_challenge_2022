@@ -31,7 +31,6 @@ class Data
 		Tile *	closestEnemy( Tile& to );
 		Tile *	closestUnit( Tile& to);
 
-		void	setNeighbors();
 
 		Tile *	getTile(int x, int y);
 		Tile *	getValidTile(int x, int y);

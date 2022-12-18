@@ -7,12 +7,13 @@
 
 void Data::read()
 {
+	int id = 0;
 	// tiles.reserve(width * height);
 	std::cin >> my_matter >> opp_matter;
 	std::cin.ignore();
 	for (int y = 0; y < height; y++)
 	{
-		for (int x = 0; x < width; x++)
+		for (int x = 0; x < width; x++, id++)
 		{
 			int scrap_amount;
 			int owner; // 1 = me, 0 = foe, -1 = neutral
@@ -21,18 +22,14 @@ void Data::read()
 			int can_build;
 			int can_spawn;
 			int in_range_of_recycler;
-			int	id = height * y + x;
 			std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler;
 			std::cin.ignore();
 
 			Tile tile = {id, x, y, scrap_amount, owner, units,
-						 recycler == 1, can_build == 1, can_spawn == 1, in_range_of_recycler == 1,
-						 false, 0, 0, 0, 0};
+						 recycler == 1, can_build == 1, can_spawn == 1, in_range_of_recycler == 1};
 			tiles.push_back(tile);
 
 			Tile* tmp = getTile(x, y);
-			if (id == 1)
-				debug("read", tmp);
 			if (tile.owner == ME)
 			{
 				my_tiles.push_back(tmp);
@@ -63,21 +60,7 @@ void Data::read()
 			}
 		}
 	}
-	setNeighbors();
 	
-}
-
-void	Data::setNeighbors()
-{
-	for (auto& tile : tiles)
-	{
-		int	x = tile.x;
-		int	y = tile.y;
-		tile.left 	= getValidTile(x - 1, y);
-		tile.right	= getValidTile(x + 1, y);
-		tile.top 	= getValidTile(x, y - 1);
-		tile.bottom = getValidTile(x, y + 1);
-	}
 }
 
 
@@ -100,7 +83,7 @@ Tile *	Data::getValidTile(int x, int y)
 Tile *	Data::getUsableTile(int x, int y)
 {
 	Tile* tile = getValidTile(x, y);
-	if (!tile || (tile->in_range_of_recycler && tile->scrap_amount == 1) || tile->recycler)
+	if (!tile || tile->recycler)
 		return NULL;
 	return tile;
 }
