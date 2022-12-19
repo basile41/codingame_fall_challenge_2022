@@ -5,6 +5,31 @@
 int turn;
 int my_side;
 
+void	init_graph(Data& d, Graph& graph)
+{
+	graph.tiles = &d.tiles;
+	// set les sommets du graphe
+	for (auto &tile : d.tiles)
+	{
+		if (tile.scrap_amount && !tile.recycler)
+		{
+			graph.addVertex(tile.id);
+		}
+	}
+
+	// set les arretes du graphe
+	for (auto &tile : d.tiles)
+	{
+		if (tile.scrap_amount && !tile.recycler)
+		{
+			for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
+			{
+				graph.addEdge(tile.id, neighbor_id);
+			}
+		}
+	}
+}
+
 int main()
 {
 	// while (1)
@@ -36,17 +61,31 @@ int main()
 		// std::cerr << "tile 8 " << d.getTile(0, 1)->x << " " << d.getTile(0, 1)->y << std::endl;
 		// std::cerr << "tile 8 : id : " << d.getTile(0, 1)->id << std::endl;
 		// std::cerr << std:: endl;
-		Graph g;
-		g.tiles = &d.tiles;
+		Graph graph;
+		// init_graph(d, graph);
 
+		graph.tiles = &d.tiles;
 		// set les sommets du graphe
 		for (auto &tile : d.tiles)
 		{
 			if (tile.scrap_amount && !tile.recycler)
 			{
-				g.addVertex(tile.id);
+				graph.addVertex(tile.id);
 			}
 		}
+
+		// // set les arretes du graphe
+		// for (auto &tile : d.tiles)
+		// {
+		// 	if (tile.scrap_amount && !tile.recycler)
+		// 	{
+		// 		for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
+		// 		{
+		// 			graph.addEdge(tile.id, neighbor_id);
+		// 		}
+		// 	}
+		// }
+
 
 		// set les arretes du graphe
 		for (auto &tile : d.tiles)
@@ -65,8 +104,8 @@ int main()
 					{
 						// std::cerr << "neighbor " << neighbor->x << " " << neighbor->y << std::endl;
 						// std::cerr << "neighbor id " << neighbor->id << std::endl;
-
-						g.addEdge(tile.id, neighbor->id);
+						
+						graph.addEdge(tile.id, neighbor->id);
 					}
 				}
 			}
@@ -94,10 +133,12 @@ int main()
 		if (d.my_matter >= 10)
 			me_unit->spawn(1);
 
+		//pour chaque units : move vers la case neutre la plus proche
 		for (auto &tile : d.my_units)
 		{
-			int target_id = bfs(g, tile->id, [](Tile &tile)
+			int target_id = bfs(graph, tile->id, [](Tile &tile)
 								{ return (tile.owner == NONE); });
+			debug("target_id", target_id);
 			if (target_id != -1)
 				tile->move(tile->units, d.tiles.at(target_id));
 		}

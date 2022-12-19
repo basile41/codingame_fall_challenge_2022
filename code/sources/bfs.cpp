@@ -20,7 +20,7 @@ int bfs(Graph &graph, int startId, bool (*to_find)(Tile& tile) = 0)
 		// Get the next vertex in the queue and visit it
 		Vertex *v = q.front();
 		q.pop();
-		// std::cerr << "Visiting vertex " << v->id << std::endl;
+		std::cerr << "Visiting vertex " << v->id << std::endl;
 		// std::cerr << "distance =  " << v->distance << std::endl;
 		// std::cerr << "id " << graph.tiles->at(v->id).id << std::endl;
 		// std::cerr << "owner " << graph.tiles->at(v->id).owner << std::endl;
