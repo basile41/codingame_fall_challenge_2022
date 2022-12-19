@@ -3,7 +3,7 @@
 # include "Graph.hpp"
 
 
-void bfs(Graph &graph, int startId)
+int bfs(Graph &graph, int startId, bool (*to_find)(Tile& tile) = 0)
 {
 	// Initialize a queue for BFS and a set to store visited vertices
 	std::queue<Vertex*> q;
@@ -20,8 +20,14 @@ void bfs(Graph &graph, int startId)
 		// Get the next vertex in the queue and visit it
 		Vertex *v = q.front();
 		q.pop();
-		std::cerr << "Visiting vertex " << v->id << std::endl;
-		std::cerr << "distance =  " << v->distance << std::endl;
+		// std::cerr << "Visiting vertex " << v->id << std::endl;
+		// std::cerr << "distance =  " << v->distance << std::endl;
+		// std::cerr << "id " << graph.tiles->at(v->id).id << std::endl;
+		// std::cerr << "owner " << graph.tiles->at(v->id).owner << std::endl;
+		if (to_find(graph.tiles->at(v->id)))
+		{
+			return (v->id);
+		}
 
 		// Add all of its unvisited neighbors to the queue
 		for (Edge &e : v->edges)
@@ -35,4 +41,5 @@ void bfs(Graph &graph, int startId)
 			}
 		}
 	}
+	return (-1);
 }

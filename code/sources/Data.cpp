@@ -8,7 +8,7 @@
 void Data::read()
 {
 	int id = 0;
-	// tiles.reserve(width * height);
+	tiles.reserve(width * height);
 	std::cin >> my_matter >> opp_matter;
 	std::cin.ignore();
 	for (int y = 0; y < height; y++)
@@ -28,7 +28,7 @@ void Data::read()
 			Tile tile = {id, x, y, scrap_amount, owner, units,
 						 recycler == 1, can_build == 1, can_spawn == 1, in_range_of_recycler == 1};
 			tiles.push_back(tile);
-
+			// std::cerr << tiles.back().owner << std::endl;
 			Tile* tmp = getTile(x, y);
 			if (tile.owner == ME)
 			{

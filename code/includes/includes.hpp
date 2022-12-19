@@ -44,6 +44,11 @@ void	message(std::string message);
 
 std::vector<Tile*> setTerritory(Tile*& s);
 
-void bfs(Graph &graph, int startId);
+bool	is_tile(Tile* tile);
+bool	is_usable_tile(Tile* tile);
+bool	is_my_empty_tile(Tile* tile);
+
+
+int bfs(Graph &graph, int startId, bool (*to_find)(Tile& tile));
 
 #endif /* INCLUDES_HPP */

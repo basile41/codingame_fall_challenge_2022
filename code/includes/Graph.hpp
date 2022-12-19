@@ -28,6 +28,7 @@ class Graph
 {
 public:
 	std::vector<Vertex> vertices;
+	std::vector<Tile>	*tiles;
 
 	void addVertex(int id)
 	{
