@@ -30,6 +30,41 @@ void	init_graph(Data& d, Graph& graph)
 	}
 }
 
+// template<typename T>
+// std::function<bool(T&, T& )> make_lambda_fcomp(int side)
+// {
+// 	std::function<bool(T&, T& )> f_comp;
+// 	if (side == LEFT)
+// 		f_comp = 	[](T& v1, T& v2)->bool 
+// 					{ return (v1 < v2);};
+// 	else
+// 		f_comp = 	[](T& v1, T& v2)->bool 
+// 					{ return (v1 > v2);};
+// 	return f_comp;
+// }
+
+std::function<bool(Tile*&, Tile*& )> make_lambda_fcomp_x(int side, int height)
+{
+	int y = height / 2;
+	std::function<bool(Tile*&, Tile*& )> f_comp;
+	if (side == LEFT)
+		f_comp = 	[y](Tile*& t1, Tile*& t2)->bool 
+		{
+			if (t1->x == t2->x)
+				return (abs(y - t1->y) < abs(y - t2->y));
+			return (t1->x < t2->x);
+		};
+	else
+		f_comp = 	[y](Tile*& t1, Tile*& t2)->bool 
+		{
+			if (t1->x == t2->x)
+				return (abs(y - t1->y) > abs(y - t2->y));
+			return (t1->x > t2->x);
+		};
+	return f_comp;
+}
+
+
 int main()
 {
 	// while (1)
@@ -39,12 +74,16 @@ int main()
 	//     std::cerr << s << std::endl;
 	// }
 
+	int 	width;
+	int 	height;
+	// Tile*	me_start;
+	// Tile*	opp_start;
+	
 	turn = 0;
-	int width;
-	int height;
 	std::cin >> width >> height;
 	std::cin.ignore();
-	// Data d(width, height);
+	
+	
 
 	// game loop
 	while (42)
@@ -54,6 +93,16 @@ int main()
 		d.height = height;
 		d.read();
 
+
+
+
+		
+		std::function<bool(Tile&, Tile& )> f_comp;
+		f_comp = 	[](Tile& t1, Tile& t2)->bool 
+					{ return (t1.x < t2.x);};
+
+		std::sort(d.my_units.begin(), d.my_units.end(), make_lambda_fcomp_x(my_side, height));
+
 		if (turn == 0)
 			my_side = d.my_tiles[0]->x < width / 2 ? LEFT : RIGHT;
 
@@ -61,6 +110,12 @@ int main()
 		// std::cerr << "tile 8 " << d.getTile(0, 1)->x << " " << d.getTile(0, 1)->y << std::endl;
 		// std::cerr << "tile 8 : id : " << d.getTile(0, 1)->id << std::endl;
 		// std::cerr << std:: endl;
+
+		// unité la plus proche de mon bord
+		// auto my_last_unit_it = std::max_element(d.my_units.begin(), d.my_units.end(),
+		// 							  [](const Tile *t1, const Tile *t2)
+		// 							  { return (t1->x > t2->x) ^ my_side; });
+
 		Graph graph;
 		// init_graph(d, graph);
 
@@ -74,77 +129,119 @@ int main()
 			}
 		}
 
-		// // set les arretes du graphe
-		// for (auto &tile : d.tiles)
-		// {
-		// 	if (tile.scrap_amount && !tile.recycler)
-		// 	{
-		// 		for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
-		// 		{
-		// 			graph.addEdge(tile.id, neighbor_id);
-		// 		}
-		// 	}
-		// }
-
-
 		// set les arretes du graphe
 		for (auto &tile : d.tiles)
 		{
-			int x = tile.x;
-			int y = tile.y;
 			if (tile.scrap_amount && !tile.recycler)
 			{
-				for (auto &neighbor : {d.getUsableTile(x - 1, y),
-									   d.getUsableTile(x, y - 1),
-									   d.getUsableTile(x + 1, y),
-									   d.getUsableTile(x, y + 1)})
+				for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
 				{
-
-					if (neighbor)
-					{
-						// std::cerr << "neighbor " << neighbor->x << " " << neighbor->y << std::endl;
-						// std::cerr << "neighbor id " << neighbor->id << std::endl;
-						
-						graph.addEdge(tile.id, neighbor->id);
-					}
+					graph.addEdge(tile.id, neighbor_id);
 				}
 			}
 		}
 
-		// build à côté d'une unité ennemie
-		for (auto &tile : d.opp_units)
+
+		
+		// build si >= 2 ennemis a côté sinon spawn 1 si 1 unité 
+		for (auto &opp_unit : d.opp_units)
 		{
 
 			if (d.my_matter < 10)
 				break;
-			for (auto &neighbor_id : d.getNeighbors(tile->id, is_my_empty_tile))
+			for (auto &neighbor_id : d.getNeighbors(opp_unit->id, is_my_empty_tile))
 			{
 				if (d.my_matter < 10)
 					break;
-				d.tiles.at(neighbor_id).build();
+				if (opp_unit->units >= 2)
+					d.tiles.at(neighbor_id).build();
+				else if (opp_unit->units == 1)
+					d.tiles.at(neighbor_id).spawn(1);
 			}
 		}
 
-		auto me_it = std::max_element(d.my_units.begin(), d.my_units.end(),
-									  [](const Tile *t1, const Tile *t2)
-									  { return (t1->x < t2->x) ^ my_side; });
-		auto me_unit = *me_it;
 
-		if (d.my_matter >= 10)
-			me_unit->spawn(1);
+		for (auto &opp_unit : d.opp_tiles)
+		{
+			if (d.my_matter < 10)
+				break;
+			
+			if (opp_unit->units == 0)
+			{
+				for (auto &neighbor_id : d.getNeighbors(opp_unit->id, is_my_empty_tile))
+				{
+					if (d.my_matter < 10)
+						break;
+					d.tiles.at(neighbor_id).spawn(2);
+				}
+
+			}
+		}
+
+
+		std::vector<Tile *>::iterator my_first_unit_it;
+
+		if (!d.my_units.empty())
+		{
+			my_first_unit_it = std::max_element(d.my_units.begin(), d.my_units.end(),
+										[](const Tile *t1, const Tile *t2)
+										{ return (t1->x < t2->x) ^ my_side; });
+			auto my_first_unit = *my_first_unit_it;
+
+			if (d.my_matter >= 10)
+			{
+				std::function<bool(Tile &tile)> f_to_find;
+					f_to_find = [](Tile &tile)->bool 
+						{ return (tile.owner == OPP); };
+				if (bfs(graph, my_first_unit->id, f_to_find) != -1)
+					my_first_unit->spawn(1);
+			}
+
+		}
+
 
 		//pour chaque units : move vers la case neutre la plus proche
-		for (auto &tile : d.my_units)
+		for (auto &current : d.my_units)
 		{
-			int target_id = bfs(graph, tile->id, [](Tile &tile)
-								{ return (tile.owner == NONE); });
-			debug("target_id", target_id);
-			if (target_id != -1)
-				tile->move(tile->units, d.tiles.at(target_id));
+			int target_id;
+			std::function<bool(Tile &tile)> f_to_find;
+
+			
+			f_to_find = [](Tile &tile)->bool 
+				{ return (tile.owner == OPP); };
+
+			target_id = bfs(graph, current->id, f_to_find);
+			int x = current->x;
+
+			if (target_id == -1)
+				f_to_find = [x](Tile &tile)->bool 
+					{ return (tile.owner == NONE); };
+			else if (my_side == LEFT)
+				f_to_find = [x](Tile &tile)->bool 
+					{ return (tile.owner == NONE) && tile.x >= x; };
+			else
+				f_to_find = [x](Tile &tile)->bool 
+					{ return (tile.owner == NONE) && tile.x <= x; };
+
+			target_id = bfs(graph, current->id, f_to_find);
+
+
+
+			if (target_id != -1) //move vers la case neutre la plus proche
+				current->move((current->units + 1) / 2, d.tiles.at(target_id));
+			else //move vers la case ennemie la plus proche
+			{
+
+				f_to_find = [](Tile &tile)->bool 
+					{ return (tile.owner == OPP); };
+				target_id = bfs(graph, current->id, f_to_find);
+				if (target_id != -1)
+					current->move(current->units, d.tiles.at(target_id));
+			}
 		}
 
 		message("coucou");
-		std::cout << std::endl;
+		std::cout << "WAIT;" << std::endl;
 		turn++;
 	}
 }

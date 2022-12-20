@@ -10,6 +10,7 @@
 # include <queue>
 # include <set>
 # include <algorithm>
+# include <functional>
 
 # include "Tile.hpp"
 # include "Data.hpp"
@@ -25,6 +26,7 @@ static constexpr int RIGHT = 1;
 class Tile;
 class Data;
 class Graph;
+
 
 template<typename T>
 void	debug(const T& value)
@@ -49,6 +51,8 @@ bool	is_usable_tile(Tile* tile);
 bool	is_my_empty_tile(Tile* tile);
 
 
-int bfs(Graph &graph, int startId, bool (*to_find)(Tile& tile));
+// int bfs(Graph &graph, int startId, bool (*to_find)(Tile& tile));
+int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>&);
+// int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find );
 
 #endif /* INCLUDES_HPP */

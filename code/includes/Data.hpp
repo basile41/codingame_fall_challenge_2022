@@ -10,10 +10,10 @@ class Data
 	public:
 		// Data(int width, int height);
 
-		int 							width;
-		int 							height;
-		int								my_matter;
-		int								opp_matter;
+		int width;
+		int height;
+		int	my_matter;
+		int	opp_matter;
 
         std::vector<Tile>	tiles;
         std::vector<Tile*>	my_tiles;
@@ -23,6 +23,8 @@ class Data
         std::vector<Tile*>	opp_units;
         std::vector<Tile*>	my_recyclers;
         std::vector<Tile*>	opp_recyclers;
+
+		int	my_side;
 
 		void	read();
 
@@ -49,7 +51,7 @@ class Data
 			std::vector<int> neighbors;
 			int x = tiles.at(id).x;
 			int y = tiles.at(id).y;
-            for (auto &neighbor_id : {getId(x - 1, y),
+            for (auto &neighbor_id : {	getId(x - 1, y),
                                    		getId(x, y - 1),
                                    		getId(x + 1, y),
                                    		getId(x, y + 1)})

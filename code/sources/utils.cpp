@@ -12,7 +12,7 @@ bool	is_tile(Tile* tile)
 
 bool	is_usable_tile(Tile* tile)
 {
-	return (is_tile(tile) && tile->recycler);
+	return (is_tile(tile) && !tile->recycler);
 }
 
 bool	is_my_empty_tile(Tile* tile)
