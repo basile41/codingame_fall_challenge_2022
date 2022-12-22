@@ -78,8 +78,8 @@ int main()
 	int 	height;
 
 	std::function<bool(Tile &tile)> f_to_find;
-	// Tile*	me_start;
-	// Tile*	opp_start;
+	int	my_start_id;
+	int	opp_start_id;
 	
 	turn = 0;
 	std::cin >> width >> height;
@@ -91,14 +91,14 @@ int main()
 	while (42)
 	{
 
-		// if (turn == 17)
-		// {
-		// 	std::string str;
-		// 	while(std::getline(std::cin, str))
-		// 	{
-		// 		std::cerr << str << std::endl;
-		// 	}
-		// }
+		if (turn == 17)
+		{
+			std::string str;
+			while(std::getline(std::cin, str))
+			{
+				std::cerr << str << std::endl;
+			}
+		}
 
 		Data d;
 		d.width = width;
@@ -113,7 +113,21 @@ int main()
 		std::sort(d.my_units.begin(), d.my_units.end(), make_lambda_fcomp_x(my_side, height));
 
 		if (turn == 0)
+		{
+			Graph g;
+			init_graph(d, g);
 			my_side = d.my_tiles[0]->x < width / 2 ? LEFT : RIGHT;
+			for (auto& my_tile : d.my_tiles)
+			{
+
+				f_to_find = [](Tile &tile)->bool 
+							{ return (tile.owner == OPP && tile.units == 0); };
+
+				if (my_tile->units == 0)
+					my_start_id = my_tile->id;
+			}
+				opp_start_id = bfs(g, my_start_id, f_to_find);
+		}
 
 		// std::cerr << "tile 8 " << d.tiles[8].x << " " << d.tiles[8].y << std::endl;
 		// std::cerr << "tile 8 " << d.getTile(0, 1)->x << " " << d.getTile(0, 1)->y << std::endl;
@@ -159,8 +173,6 @@ int main()
 				if (my_tile->units == 0)
 				{
 					int rent = d.get_recycle_rent(my_tile->id);
-					debug("current: ");
-					debug(my_tile->id, rent);
 
 					if (rent > max_rent)
 					{
@@ -169,8 +181,6 @@ int main()
 					}
 				}
 			}
-			debug("max: ");
-			debug(max_rent_id, max_rent);
 			if (max_rent >= 10)
 			{
 				d.tiles.at(max_rent_id).build();
@@ -182,7 +192,6 @@ int main()
 
 
 		Graph graph;
-		graph.tiles = &d.tiles;
 		init_graph(d, graph);
 
 
@@ -205,7 +214,7 @@ int main()
 
 		
 
-
+		// spawn a côté d une case vide ennemie
 		for (auto &opp_unit : d.opp_tiles)
 		{
 			if (d.my_matter < 10)
@@ -226,13 +235,70 @@ int main()
 		}
 
 
-		std::vector<Tile *>::iterator my_first_unit_it;
+		// actions pour ma case la plus proche de la base ennemi 
+		if (turn % 3 && d.my_matter >= 10)
+		{
+			f_to_find = [](Tile &tile)->bool 
+						{ return (tile.owner == ME); };
+			int closest_of_ennemi = bfs(graph, opp_start_id, f_to_find);
 
+
+			f_to_find = [](Tile &tile)->bool 
+						{ return (tile.owner == OPP); };
+			if (closest_of_ennemi != -1 && !d.tiles[closest_of_ennemi].isolated)
+			{
+				d.tiles[closest_of_ennemi].spawn(1);
+				d.my_matter -= 10;
+			}
+		}
+
+		// actions pour mon robot le plus proche de la base ennemi 
+		if (d.my_matter >= 10)
+		{
+			f_to_find = [](Tile &tile)->bool 
+						{ return (tile.owner == ME && tile.units); };
+			int closest_of_ennemi = bfs(graph, opp_start_id, f_to_find);
+			if (closest_of_ennemi != -1)
+			{
+				d.tiles[closest_of_ennemi].move(1, d.tiles[opp_start_id]);
+			}
+		}
+			
+
+
+		// spawn haut/bas
 		if (!d.my_units.empty())
 		{
-			// my_first_unit_it = std::max_element(d.my_units.begin(), d.my_units.end(),
-			// 							[](const Tile *t1, const Tile *t2)
-			// 							{ return (t1->x < t2->x) ^ my_side; });
+			std::function<bool (Tile *&, Tile *&)> fcomp;
+			if (turn % 2)
+				fcomp = [](Tile*& t1, Tile*& t2)->bool 
+				{
+					if (t1->y == t2->y)
+						return (t1->x > t2->x); //ici
+					return (t1->y < t2->y);
+				};
+			else
+				fcomp = [](Tile*& t1, Tile*& t2)->bool 
+				{
+					if (t1->y == t2->y)
+						return (t1->x > t2->x); //ici
+					return (t1->y > t2->y);
+				};
+
+			if (my_side == LEFT)
+				std::sort(d.my_tiles.begin(), d.my_tiles.end(), fcomp);
+			else
+				std::sort(d.my_tiles.rbegin(), d.my_tiles.rend(), fcomp);
+			
+			d.my_tiles[0]->spawn(1);
+		}
+
+
+
+
+		// spawn random
+		if (!d.my_units.empty())
+		{
 			std::random_shuffle(d.my_units.begin(), d.my_units.end());
 
 			auto unit_to_spawn = d.my_units.front();
@@ -322,7 +388,7 @@ int main()
 					{ return (tile.owner == OPP); };
 				target_id = bfs(graph, current->id, f_to_find);
 				if (target_id != -1)
-					current->move(current->units, d.tiles.at(target_id));
+					current->move(d.tiles[target_id].units + 1, d.tiles.at(target_id));
 			}
 		}
 

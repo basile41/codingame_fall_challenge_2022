@@ -13,7 +13,10 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find)
 	graph.visited.clear();
 	Vertex *start = graph.findVertex(startId);
 	if (!start)
+	{
 		std::cerr << "id introuvable" << std::endl;
+		return (-1);
+	}
 	start->distance = 0;
 	q.push(start);
 	graph.visited.insert(startId);
