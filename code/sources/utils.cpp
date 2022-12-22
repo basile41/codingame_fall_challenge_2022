@@ -19,3 +19,8 @@ bool	is_my_empty_tile(Tile* tile)
 {
 	return (is_tile(tile) && is_usable_tile(tile) && tile->owner == ME && !tile->units);
 }
+
+bool	is_empty_opp(Tile* tile)
+{
+	return (is_tile(tile) && is_usable_tile(tile) && tile->owner == OPP && !tile->units);
+}

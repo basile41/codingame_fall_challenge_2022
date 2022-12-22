@@ -25,8 +25,8 @@ void Data::read()
 			std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler;
 			std::cin.ignore();
 
-			Tile tile = {id, x, y, scrap_amount, owner, units,
-						 recycler == 1, can_build == 1, can_spawn == 1, in_range_of_recycler == 1};
+			Tile tile = { id, x, y, scrap_amount, owner, units, recycler == 1, 
+						  can_build == 1, can_spawn == 1, in_range_of_recycler == 1, false};
 			tiles.push_back(tile);
 			// std::cerr << tiles.back().owner << std::endl;
 			Tile* tmp = getTile(x, y);

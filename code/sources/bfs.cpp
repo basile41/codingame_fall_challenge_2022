@@ -7,13 +7,16 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find)
 {
 	// Initialize a queue for BFS and a set to store visited vertices
 	std::queue<Vertex*> q;
-	std::set<int> visited;
 
 	// Find the starting vertex and add it to the queue
+
+	graph.visited.clear();
 	Vertex *start = graph.findVertex(startId);
+	if (!start)
+		std::cerr << "id introuvable" << std::endl;
 	start->distance = 0;
 	q.push(start);
-	visited.insert(startId);
+	graph.visited.insert(startId);
 
 	while (!q.empty())
 	{
@@ -33,11 +36,11 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find)
 		for (Edge &e : v->edges)
 		{
 			Vertex *to = e.to;
-			if (visited.find(to->id) == visited.end())
+			if (graph.visited.find(to->id) == graph.visited.end())
 			{
 				to->distance = v->distance + 1;
 				q.push(to);
-				visited.insert(to->id);
+				graph.visited.insert(to->id);
 			}
 		}
 	}

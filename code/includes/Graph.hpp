@@ -28,6 +28,8 @@ class Graph
 {
 public:
 	std::vector<Vertex> vertices;
+	std::set<int> 		visited;
+
 	std::vector<Tile>	*tiles;
 
 	void addVertex(int id)
