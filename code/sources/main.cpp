@@ -149,6 +149,37 @@ int main()
 			}
 		}
 
+		// build investisssement
+		if (d.my_matter >= 10)
+		{
+			int max_rent = 0;
+			int max_rent_id;
+			for (auto& my_tile : d.my_tiles)
+			{
+				if (my_tile->units == 0)
+				{
+					int rent = d.get_recycle_rent(my_tile->id);
+					debug("current: ");
+					debug(my_tile->id, rent);
+
+					if (rent > max_rent)
+					{
+						max_rent = rent;
+						max_rent_id = my_tile->id;
+					}
+				}
+			}
+			debug("max: ");
+			debug(max_rent_id, max_rent);
+			if (max_rent >= 10)
+			{
+				d.tiles.at(max_rent_id).build();
+				d.my_matter -= 10;
+			}
+		}
+
+
+
 
 		Graph graph;
 		graph.tiles = &d.tiles;

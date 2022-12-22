@@ -5,6 +5,8 @@
 # include "Tile.hpp"
 # include "includes.hpp"
 
+bool is_tile(Tile *tile);
+
 class Data
 {
 	public:
@@ -60,6 +62,25 @@ class Data
 					neighbors.push_back(neighbor_id);
 			}
 			return (neighbors);
+		}
+
+		int	get_recycle_rent(int id)
+		{
+			int	lost_tiles = 5;
+			int scraps_amount = tiles[id].scrap_amount;
+			int rent = scraps_amount;
+
+			for (auto& neighbor : getNeighbors(id, is_tile))
+			{
+				if (tiles[neighbor].scrap_amount > scraps_amount)
+				{
+					rent += scraps_amount;
+					lost_tiles--;
+				}
+				else
+					rent += tiles[neighbor].scrap_amount;
+			}
+			return (rent - lost_tiles * 10);
 		}
 
 };
