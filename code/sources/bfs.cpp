@@ -2,6 +2,7 @@
 
 # include "Graph.hpp"
 
+static int compteur_bfs = 0;
 
 int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find)
 {
@@ -17,6 +18,7 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find)
 		std::cerr << "id introuvable" << std::endl;
 		return (-1);
 	}
+	compteur_bfs++;
 	start->distance = 0;
 	q.push(start);
 	graph.visited.insert(startId);
@@ -73,4 +75,10 @@ void	init_graph(Data& d, Graph& graph)
 			}
 		}
 	}
+}
+
+void nb_bfs()
+{
+	std::cerr << "nombre de bfs : " << compteur_bfs << std::endl;
+	compteur_bfs = 0;
 }

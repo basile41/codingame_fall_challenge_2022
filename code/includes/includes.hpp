@@ -54,6 +54,7 @@ bool	is_empty_opp(Tile* tile);
 int 	bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>&);
 
 void	init_graph(Data& d, Graph& graph);
+void 	nb_bfs();
 
 
 #endif /* INCLUDES_HPP */
