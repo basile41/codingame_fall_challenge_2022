@@ -40,48 +40,12 @@ class Data
 		Tile *	getValidTile(int x, int y);
 		Tile *	getUsableTile(int x, int y);
 
-		int		getId(int x, int y)
-		{
-			if (x < 0 || x >= width || y < 0 || y >= height)
-				return -1;
-			return (y * width + x);
-		}
+		int		getId(int x, int y);
 
 
-		std::vector<int> getNeighbors(int id, bool (*f)(Tile*))
-		{
-			std::vector<int> neighbors;
-			int x = tiles.at(id).x;
-			int y = tiles.at(id).y;
-            for (auto &neighbor_id : {	getId(x - 1, y),
-                                   		getId(x, y - 1),
-                                   		getId(x + 1, y),
-                                   		getId(x, y + 1)})
-			{
-				if (neighbor_id != -1 && f(&tiles.at(neighbor_id)))
-					neighbors.push_back(neighbor_id);
-			}
-			return (neighbors);
-		}
+		std::vector<int> getNeighbors(int id, bool (*f)(Tile*));
 
-		int	get_recycle_rent(int id)
-		{
-			int	lost_tiles = 5;
-			int scraps_amount = tiles[id].scrap_amount;
-			int rent = scraps_amount;
-
-			for (auto& neighbor : getNeighbors(id, is_tile))
-			{
-				if (tiles[neighbor].scrap_amount > scraps_amount)
-				{
-					rent += scraps_amount;
-					lost_tiles--;
-				}
-				else
-					rent += tiles[neighbor].scrap_amount;
-			}
-			return (rent - lost_tiles * 10);
-		}
+		int	getRecycleRent(int id);
 
 };
 

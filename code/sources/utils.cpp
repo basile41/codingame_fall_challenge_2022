@@ -24,3 +24,4 @@ bool	is_empty_opp(Tile* tile)
 {
 	return (is_tile(tile) && is_usable_tile(tile) && tile->owner == OPP && !tile->units);
 }
+

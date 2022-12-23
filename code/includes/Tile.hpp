@@ -19,6 +19,7 @@ class Tile
 		bool	can_spawn;
 		bool	in_range_of_recycler;
 		bool	isolated;
+		bool	targeted;
 
 
 		//Methods

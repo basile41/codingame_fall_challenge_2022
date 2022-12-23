@@ -49,3 +49,28 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find)
 	}
 	return (-1);
 }
+
+void	init_graph(Data& d, Graph& graph)
+{
+	graph.tiles = &d.tiles;
+	// set les sommets du graphe
+	for (auto &tile : d.tiles)
+	{
+		if (tile.scrap_amount && !tile.recycler)
+		{
+			graph.addVertex(tile.id);
+		}
+	}
+
+	// set les arretes du graphe
+	for (auto &tile : d.tiles)
+	{
+		if (tile.scrap_amount && !tile.recycler)
+		{
+			for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
+			{
+				graph.addEdge(tile.id, neighbor_id);
+			}
+		}
+	}
+}

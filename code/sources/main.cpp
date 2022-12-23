@@ -5,44 +5,6 @@
 int turn;
 int my_side;
 
-void	init_graph(Data& d, Graph& graph)
-{
-	graph.tiles = &d.tiles;
-	// set les sommets du graphe
-	for (auto &tile : d.tiles)
-	{
-		if (tile.scrap_amount && !tile.recycler)
-		{
-			graph.addVertex(tile.id);
-		}
-	}
-
-	// set les arretes du graphe
-	for (auto &tile : d.tiles)
-	{
-		if (tile.scrap_amount && !tile.recycler)
-		{
-			for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
-			{
-				graph.addEdge(tile.id, neighbor_id);
-			}
-		}
-	}
-}
-
-// template<typename T>
-// std::function<bool(T&, T& )> make_lambda_fcomp(int side)
-// {
-// 	std::function<bool(T&, T& )> f_comp;
-// 	if (side == LEFT)
-// 		f_comp = 	[](T& v1, T& v2)->bool 
-// 					{ return (v1 < v2);};
-// 	else
-// 		f_comp = 	[](T& v1, T& v2)->bool 
-// 					{ return (v1 > v2);};
-// 	return f_comp;
-// }
-
 std::function<bool(Tile*&, Tile*& )> make_lambda_fcomp_x(int side, int height)
 {
 	int y = height / 2;
@@ -67,38 +29,31 @@ std::function<bool(Tile*&, Tile*& )> make_lambda_fcomp_x(int side, int height)
 
 int main()
 {
-	// while (1)
-	// {
-	//     std::string s;
-	//     std::getline(std::cin, s);
-	//     std::cerr << s << std::endl;
-	// }
-
 	int 	width;
 	int 	height;
 
 	std::function<bool(Tile &tile)> f_to_find;
 	int	my_start_id;
 	int	opp_start_id;
+	int can_do_backward = 0;
 	
 	turn = 0;
 	std::cin >> width >> height;
 	std::cin.ignore();
 	
 	
-
 	// game loop
 	while (42)
 	{
 
-		if (turn == 17)
-		{
-			std::string str;
-			while(std::getline(std::cin, str))
-			{
-				std::cerr << str << std::endl;
-			}
-		}
+		// if (turn == 17)
+		// {
+		// 	std::string str;
+		// 	while(std::getline(std::cin, str))
+		// 	{
+		// 		std::cerr << str << std::endl;
+		// 	}
+		// }
 
 		Data d;
 		d.width = width;
@@ -126,8 +81,24 @@ int main()
 				if (my_tile->units == 0)
 					my_start_id = my_tile->id;
 			}
-				opp_start_id = bfs(g, my_start_id, f_to_find);
+			opp_start_id = bfs(g, my_start_id, f_to_find);
 		}
+		if (d.tiles[opp_start_id].scrap_amount == 0 || d.tiles[opp_start_id].recycler)
+		{
+			Graph g;
+			init_graph(d, g);
+			for (auto& my_tile : d.my_tiles)
+			{
+
+				f_to_find = [](Tile &tile)->bool 
+							{ return (tile.owner == OPP && tile.units == 0); };
+
+				if (my_tile->units == 0)
+					my_start_id = my_tile->id;
+			}
+			opp_start_id = bfs(g, my_start_id, f_to_find);
+		}
+		
 
 		// std::cerr << "tile 8 " << d.tiles[8].x << " " << d.tiles[8].y << std::endl;
 		// std::cerr << "tile 8 " << d.getTile(0, 1)->x << " " << d.getTile(0, 1)->y << std::endl;
@@ -148,6 +119,7 @@ int main()
 				break;
 			for (auto &neighbor_id : d.getNeighbors(opp_unit->id, is_my_empty_tile))
 			{
+				can_do_backward = 1;
 				if (d.my_matter < 10)
 					break;
 				if (opp_unit->units >= 2)
@@ -157,8 +129,12 @@ int main()
 				}
 				else if (opp_unit->units == 1)
 				{
-					d.tiles.at(neighbor_id).spawn(1);
-					d.my_matter -= 10;
+					if (!d.tiles.at(neighbor_id).isolated)
+					{
+						d.tiles.at(neighbor_id).spawn(1);
+						d.my_matter -= 10;
+						
+					}
 				}
 			}
 		}
@@ -172,7 +148,7 @@ int main()
 			{
 				if (my_tile->units == 0)
 				{
-					int rent = d.get_recycle_rent(my_tile->id);
+					int rent = d.getRecycleRent(my_tile->id);
 
 					if (rent > max_rent)
 					{
@@ -253,7 +229,7 @@ int main()
 		}
 
 		// actions pour mon robot le plus proche de la base ennemi 
-		if (d.my_matter >= 10)
+		// if (d.my_matter >= 10)
 		{
 			f_to_find = [](Tile &tile)->bool 
 						{ return (tile.owner == ME && tile.units); };
@@ -267,31 +243,33 @@ int main()
 
 
 		// spawn haut/bas
-		if (!d.my_units.empty())
-		{
-			std::function<bool (Tile *&, Tile *&)> fcomp;
-			if (turn % 2)
-				fcomp = [](Tile*& t1, Tile*& t2)->bool 
-				{
-					if (t1->y == t2->y)
-						return (t1->x > t2->x); //ici
-					return (t1->y < t2->y);
-				};
-			else
-				fcomp = [](Tile*& t1, Tile*& t2)->bool 
-				{
-					if (t1->y == t2->y)
-						return (t1->x > t2->x); //ici
-					return (t1->y > t2->y);
-				};
+		std::function<bool (Tile *&, Tile *&)> fcomp;
+		if (turn % 2)
+			fcomp = [](Tile*& t1, Tile*& t2)->bool 
+			{
+				if (t1->y == t2->y)
+					return (t1->x > t2->x); //ici
+				return (t1->y < t2->y);
+			};
+		else
+			fcomp = [](Tile*& t1, Tile*& t2)->bool 
+			{
+				if (t1->y == t2->y)
+					return (t1->x > t2->x); //ici
+				return (t1->y > t2->y);
+			};
 
-			if (my_side == LEFT)
-				std::sort(d.my_tiles.begin(), d.my_tiles.end(), fcomp);
-			else
-				std::sort(d.my_tiles.rbegin(), d.my_tiles.rend(), fcomp);
-			
+		if (my_side == LEFT)
+			std::sort(d.my_tiles.begin(), d.my_tiles.end(), fcomp);
+		else
+			std::sort(d.my_tiles.rbegin(), d.my_tiles.rend(), fcomp);
+		
+		if (!d.my_tiles[0]->isolated)
+		{
 			d.my_tiles[0]->spawn(1);
+			d.my_matter -= 10;
 		}
+		
 
 
 
@@ -351,21 +329,19 @@ int main()
 		//pour chaque units : move vers la case neutre la plus proche
 		for (auto &current : d.my_units)
 		{
+			// si case vide ennemie voisine, essaye de move vers elle
 			f_to_find = [](Tile &tile)->bool 
 				{ return (tile.owner == OPP); };
-
 			for (auto& neighbor : d.getNeighbors(current->id, is_empty_opp))
 			{
 				current->move(2, d.tiles.at(neighbor));
 			}
 
 			int target_id;
-
-
 			target_id = bfs(graph, current->id, f_to_find);
 			int x = current->x;
 
-			if (target_id == -1)
+			if (target_id == -1 || can_do_backward)
 				f_to_find = [x](Tile &tile)->bool 
 					{ return (tile.owner == NONE); };
 			else if (my_side == LEFT)
@@ -380,7 +356,10 @@ int main()
 
 
 			if (target_id != -1) //move vers la case neutre la plus proche
+			{
 				current->move((current->units + 1) / 2, d.tiles.at(target_id));
+				current->targeted = true;
+			}
 			else //move vers la case ennemie la plus proche
 			{
 
@@ -391,6 +370,19 @@ int main()
 					current->move(d.tiles[target_id].units + 1, d.tiles.at(target_id));
 			}
 		}
+
+		//test
+		for (auto &current : d.my_units)
+		{
+			f_to_find = [](Tile &tile)->bool 
+				{ return (tile.owner == OPP); };
+			int target_id = bfs(graph, current->id, f_to_find);
+			if (target_id != -1)
+				current->move(current->units, d.tiles.at(target_id));
+
+		}
+
+
 
 		std::cerr << "matierau restant : " << d.my_matter << std::endl;
 		message("La meute");

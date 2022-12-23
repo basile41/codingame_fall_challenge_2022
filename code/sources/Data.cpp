@@ -26,7 +26,7 @@ void Data::read()
 			std::cin.ignore();
 
 			Tile tile = { id, x, y, scrap_amount, owner, units, recycler == 1, 
-						  can_build == 1, can_spawn == 1, in_range_of_recycler == 1, false};
+						  can_build == 1, can_spawn == 1, in_range_of_recycler == 1, false, false};
 			tiles.push_back(tile);
 			// std::cerr << tiles.back().owner << std::endl;
 			Tile* tmp = getTile(x, y);
@@ -86,5 +86,48 @@ Tile *	Data::getUsableTile(int x, int y)
 	if (!tile || tile->recycler)
 		return NULL;
 	return tile;
+}
+
+int		Data::getId(int x, int y)
+{
+	if (x < 0 || x >= width || y < 0 || y >= height)
+		return -1;
+	return (y * width + x);
+}
+
+std::vector<int> Data::getNeighbors(int id, bool (*f)(Tile*))
+{
+	std::vector<int> neighbors;
+	int x = tiles.at(id).x;
+	int y = tiles.at(id).y;
+	for (auto &neighbor_id : {	getId(x - 1, y),
+								getId(x, y - 1),
+								getId(x + 1, y),
+								getId(x, y + 1)})
+	{
+		if (neighbor_id != -1 && f(&tiles.at(neighbor_id)))
+			neighbors.push_back(neighbor_id);
+	}
+	std::random_shuffle(neighbors.begin(), neighbors.end());
+	return (neighbors);
+}
+
+int	Data::getRecycleRent(int id)
+{
+	int	lost_tiles = 5;
+	int scraps_amount = tiles[id].scrap_amount;
+	int rent = scraps_amount;
+
+	for (auto& neighbor : getNeighbors(id, is_tile))
+	{
+		if (tiles[neighbor].scrap_amount > scraps_amount)
+		{
+			rent += scraps_amount;
+			lost_tiles--;
+		}
+		else
+			rent += tiles[neighbor].scrap_amount;
+	}
+	return (rent - lost_tiles * 10);
 }
 

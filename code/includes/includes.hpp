@@ -51,9 +51,9 @@ bool	is_usable_tile(Tile* tile);
 bool	is_my_empty_tile(Tile* tile);
 bool	is_empty_opp(Tile* tile);
 
+int 	bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>&);
 
-// int bfs(Graph &graph, int startId, bool (*to_find)(Tile& tile));
-int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>&);
-// int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> &to_find );
+void	init_graph(Data& d, Graph& graph);
+
 
 #endif /* INCLUDES_HPP */
