@@ -1,6 +1,14 @@
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
 
+#undef _GLIBCXX_DEBUG                // disable run-time bound checking, etc
+#pragma GCC optimize("Ofast,inline") // Ofast = O3,fast-math,allow-store-data-races,no-protect-parens
+
+#pragma GCC target("bmi,bmi2,lzcnt,popcnt")                      // bit manipulation
+#pragma GCC target("movbe")                                      // byte swap
+#pragma GCC target("aes,pclmul,rdrnd")                           // encryption
+#pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
+
 # include <bits/types/wint_t.h>
 # include <cstddef>
 # include <iostream>
@@ -11,6 +19,7 @@
 # include <set>
 # include <algorithm>
 # include <functional>
+# include <chrono>
 
 # include "Tile.hpp"
 # include "Data.hpp"
@@ -51,7 +60,10 @@ bool	is_usable_tile(Tile* tile);
 bool	is_my_empty_tile(Tile* tile);
 bool	is_empty_opp(Tile* tile);
 
-int 	bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>&);
+int		bfs(Graph &graph, int startId);
+int 	bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>);
+int		bfs(Graph &graph, int startId, int targetId, std::function<bool (Tile &tile)> to_find);
+
 
 void	init_graph(Data& d, Graph& graph);
 void 	nb_bfs();

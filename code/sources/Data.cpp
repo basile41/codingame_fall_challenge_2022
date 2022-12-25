@@ -26,7 +26,8 @@ void Data::read()
 			std::cin.ignore();
 
 			Tile tile = { id, x, y, scrap_amount, owner, units, recycler == 1, 
-						  can_build == 1, can_spawn == 1, in_range_of_recycler == 1, false, false};
+						  can_build == 1, can_spawn == 1, in_range_of_recycler == 1, false, false,
+						  std::vector<int>(width * height, 999)};
 			tiles.push_back(tile);
 			// std::cerr << tiles.back().owner << std::endl;
 			Tile* tmp = getTile(x, y);
@@ -109,6 +110,22 @@ std::vector<int> Data::getNeighbors(int id, bool (*f)(Tile*))
 			neighbors.push_back(neighbor_id);
 	}
 	std::random_shuffle(neighbors.begin(), neighbors.end());
+	return (neighbors);
+}
+
+std::vector<int> Data::getNeighbors(int id, bool (*f)(Tile*), int dir_x, int dir_y)
+{
+	std::vector<int> neighbors;
+	int x = tiles.at(id).x;
+	int y = tiles.at(id).y;
+	for (auto &neighbor_id : {	getId(x + dir_x, y),
+								getId(x, y + dir_y),
+								getId(x, y - dir_y),
+								getId(x - dir_x, y)})
+	{
+		if (neighbor_id != -1 && f(&tiles.at(neighbor_id)))
+			neighbors.push_back(neighbor_id);
+	}
 	return (neighbors);
 }
 

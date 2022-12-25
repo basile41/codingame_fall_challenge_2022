@@ -12,7 +12,7 @@ public:
 	int distance;
 	std::vector<Edge> edges;
 
-	Vertex(int id) : id(id), distance(-1) {}
+	Vertex(int id) : id(id), distance(999) {}
 };
 
 class Edge

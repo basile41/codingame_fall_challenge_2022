@@ -27,6 +27,8 @@ class Data
         std::vector<Tile*>	opp_recyclers;
 
 		int	my_side;
+		int	dir_x;
+		int	dir_y;
 
 		void	read();
 
@@ -44,8 +46,30 @@ class Data
 
 
 		std::vector<int> getNeighbors(int id, bool (*f)(Tile*));
+		std::vector<int> getNeighbors(int id, bool (*f)(Tile*), int dir_x, int dir_y);
 
-		int	getRecycleRent(int id);
+
+		int		getRecycleRent(int id);
+
+		int		getDistance(int id1, int id2)
+		{
+			return (tiles[id1].distances[id2]);
+		}
+
+		bool	isFirstOfLine(Tile& my_tile, int dir_x)
+		{
+			int y = my_tile.y;
+			int border = -1;
+
+			if (dir_x == 1)
+				border = width;
+			for (int x = my_tile.x + dir_x ; x != border; x += dir_x)
+			{
+				if (getTile(x, y)->owner == 1 && getTile(x, y)->units)
+					return (false);
+			}
+			return (true);
+		}
 
 };
 

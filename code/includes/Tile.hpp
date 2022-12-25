@@ -20,7 +20,7 @@ class Tile
 		bool	in_range_of_recycler;
 		bool	isolated;
 		bool	targeted;
-
+		std::vector<int> distances;
 
 		//Methods
 		void    move(int amount, const Tile& to);
@@ -31,6 +31,11 @@ class Tile
 
 		void	read();
 		void	debug() const;
+
+		int		getDistanceTo(int id)
+		{
+			return (distances[id]);
+		}
 };
 
 
