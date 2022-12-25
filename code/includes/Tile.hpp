@@ -7,6 +7,8 @@
 class Tile
 {
 	public:
+		
+		Tile(size_t nb_of_tiles);
 
 		int		id;
 		int		x;
@@ -20,11 +22,17 @@ class Tile
 		bool	in_range_of_recycler;
 		bool	isolated;
 		bool	targeted;
+		Tile*	left;
+		Tile*	right;
+		Tile*	top;
+		Tile*	bottom;
+		std::vector<Tile> *tiles;
 		std::vector<int> distances;
 
 		//Methods
 		void    move(int amount, const Tile& to);
 		void    move(int amount, int x, int y);
+		void    move(int amount, int);
 		void	build();
 		void	spawn(int amount);
 
@@ -32,10 +40,16 @@ class Tile
 		void	read();
 		void	debug() const;
 
-		int		getDistanceTo(int id)
-		{
-			return (distances[id]);
-		}
+		//accessors
+
+		Tile*	getLeft();
+		Tile*	getRight();
+		Tile*	getTop();
+		Tile*	getBottom();
+
+		std::vector<Tile*>	getNeighbors();
+
+		int		getDistanceTo(int id);
 };
 
 

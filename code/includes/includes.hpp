@@ -25,6 +25,11 @@
 # include "Data.hpp"
 # include "Graph.hpp"
 
+using std::cin;
+using std::cout;
+using std::cerr;
+using std::endl;
+
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
 static constexpr int NONE = -1;
@@ -55,6 +60,19 @@ void	message(std::string message);
 
 std::vector<Tile*> setTerritory(Tile*& s);
 
+
+bool	is_tile(Tile& tile);
+bool	is_me(Tile& tile);
+bool	is_opp(Tile& tile);
+bool	is_neutral(Tile& tile);
+bool	is_unit(Tile& tile);
+bool	is_recycler(Tile& tile);
+bool	is_recycled_by_me(Tile& tile);
+bool	is_usable_tile(Tile& tile);
+bool	is_my_empty_tile(Tile& tile);
+bool	is_empty_opp(Tile& tile);
+
+
 bool	is_tile(Tile* tile);
 bool	is_usable_tile(Tile* tile);
 bool	is_my_empty_tile(Tile* tile);
@@ -67,6 +85,33 @@ int		bfs(Graph &graph, int startId, int targetId, std::function<bool (Tile &tile
 
 void	init_graph(Data& d, Graph& graph);
 void 	nb_bfs();
+
+
+
+
+template <typename T>
+std::function<bool (Tile &tile)> make_is_tile(T&& first)
+{
+	return first;
+}
+
+template <typename T, typename... Args>
+std::function<bool (Tile &tile)> make_is_tile(T&& first, Args&&... args)
+{
+	return (	
+		[&](Tile &tile)->bool 
+		{
+			return ( first(tile) && make_is_tile(std::forward<Args>(args)...)(tile) );
+		} 
+		);
+}
+
+template <typename T>
+std::function<bool (Tile &tile)> is_not(T&& f)
+{
+	return std::not1((std::function<bool (Tile &tile)>)f);
+}
+
 
 
 #endif /* INCLUDES_HPP */

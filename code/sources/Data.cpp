@@ -1,69 +1,95 @@
 #include "includes.hpp"
 #include "Data.hpp"
 
-// Data::Data(int width, int height): width(width), height(height), tiles(width * height)
-// {
-// }
-
-void Data::read()
+Data::Data(int width, int height)
+: width(width), height(height), size(width * height), tiles(size, Tile(size))
 {
 	int id = 0;
-	tiles.reserve(width * height);
-	std::cin >> my_matter >> opp_matter;
-	std::cin.ignore();
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++, id++)
 		{
-			int scrap_amount;
-			int owner; // 1 = me, 0 = foe, -1 = neutral
-			int units;
-			int recycler;
-			int can_build;
-			int can_spawn;
-			int in_range_of_recycler;
-			std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler;
-			std::cin.ignore();
-
-			Tile tile = { id, x, y, scrap_amount, owner, units, recycler == 1, 
-						  can_build == 1, can_spawn == 1, in_range_of_recycler == 1, false, false,
-						  std::vector<int>(width * height, 999)};
-			tiles.push_back(tile);
-			// std::cerr << tiles.back().owner << std::endl;
-			Tile* tmp = getTile(x, y);
-			if (tile.owner == ME)
+			Tile* tile = &tiles[id];
+			tile->id = id;
+			tile->x = x;
+			tile->y = y;
+			if (x > 0)
 			{
-				my_tiles.push_back(tmp);
-				if (tile.units > 0)
+				Tile* left = tile - 1;
+				tile->left = left;
+				left->right = tile;
+			}
+			if (y > 0)
+			{
+				Tile* top = tile - width;
+				tile->top = top;
+				top->bottom = tile;
+			}
+
+		}
+	}
+}
+
+void Data::read()
+{
+	int id = 0;
+	std::cin >> my_matter >> opp_matter;
+	std::cin.ignore();
+	my_tiles.clear();
+	opp_tiles.clear();
+	neutral_tiles.clear();
+	my_units.clear();
+	opp_units.clear();
+	my_recyclers.clear();
+	opp_recyclers.clear();
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++, id++)
+		{
+			Tile* tile = &tiles[id];
+			tile->read();
+			tile->targeted = false;
+
+			if (tile->owner == ME)
+			{
+				my_tiles.push_back(tile);
+				if (tile->units > 0)
 				{
-					my_units.push_back(tmp);
+					my_units.push_back(tile);
 				}
-				else if (tile.recycler)
+				else if (tile->recycler)
 				{
-					my_recyclers.push_back(tmp);
+					my_recyclers.push_back(tile);
 				}
 			}
-			else if (tile.owner == OPP)
+			else if (tile->owner == OPP)
 			{
-				opp_tiles.push_back(tmp);
-				if (tile.units > 0)
+				opp_tiles.push_back(tile);
+				if (tile->units > 0)
 				{
-					opp_units.push_back(tmp);
+					opp_units.push_back(tile);
 				}
-				else if (tile.recycler)
+				else if (tile->recycler)
 				{
-					opp_recyclers.push_back(tmp);
+					opp_recyclers.push_back(tile);
 				}
 			}
 			else
 			{
-				neutral_tiles.push_back(tmp);
+				neutral_tiles.push_back(tile);
 			}
 		}
 	}
 	
 }
 
+
+Tile *	Data::getTile(int id)
+{
+	if (id < 0 || id >= size)
+		std::cerr << "Data::getTile : Invalid ID : " << id << std::endl;
+	return (&tiles[id]);
+}
 
 Tile *	Data::getTile(int x, int y)
 {

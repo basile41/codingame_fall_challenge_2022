@@ -2,6 +2,12 @@
 #include "Tile.hpp"
 
 
+Tile::Tile(size_t nb_of_tiles)
+: left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999)
+{
+
+}
+
 //Methods
 void    Tile::move(int amount, const Tile& to)
 {
@@ -10,6 +16,10 @@ void    Tile::move(int amount, const Tile& to)
 void    Tile::move(int amount, int x, int y)
 {
 	std::cout << "MOVE " << amount << *this << x << " " << y << ";";
+}
+void    Tile::move(int amount, int id)
+{
+	std::cout << "MOVE " << amount << *this << tiles->at(id).x << " " << tiles->at(id).y << ";";
 }
 
 void	Tile::build()
@@ -23,7 +33,8 @@ void	Tile::spawn(int amount)
 
 void	Tile::read()
 {
-	std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler; std::cin.ignore();
+	std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler;
+	std::cin.ignore();
 }
 
 void Tile::debug() const
@@ -37,6 +48,44 @@ void Tile::debug() const
 	::debug("units :", units);
 	std::cerr << std::endl;
 }
+
+
+Tile*	Tile::getLeft()
+{
+	return left;
+}
+
+Tile*	Tile::getRight()
+{
+	return right;
+}
+
+Tile*	Tile::getTop()
+{
+	return top;
+}
+
+Tile*	Tile::getBottom()
+{
+	return bottom;
+}
+
+std::vector<Tile*>	Tile::getNeighbors()
+{
+	std::vector<Tile*> neighbors;
+	for (auto& neighbor : {left, right, top, bottom})
+	{
+		if (neighbor)
+			neighbors.push_back(neighbor);
+	}
+	return (neighbors);
+}
+
+int		Tile::getDistanceTo(int id)
+{
+	return (distances[id]);
+}
+
 
 
 std::ostream& operator<<(std::ostream& os, const Tile& t)

@@ -10,12 +10,16 @@ bool is_tile(Tile *tile);
 class Data
 {
 	public:
-		// Data(int width, int height);
+		Data(int width, int height);
 
-		int width;
-		int height;
-		int	my_matter;
-		int	opp_matter;
+		int 	width;
+		int 	height;
+		int		size;
+		int		my_matter;
+		int		opp_matter;
+		int		my_side;
+		int		dir_x;
+		int		dir_y;
 
         std::vector<Tile>	tiles;
         std::vector<Tile*>	my_tiles;
@@ -26,19 +30,11 @@ class Data
         std::vector<Tile*>	my_recyclers;
         std::vector<Tile*>	opp_recyclers;
 
-		int	my_side;
-		int	dir_x;
-		int	dir_y;
-
 		void	read();
 
-		Tile *	center();
-
-		Tile *	closestEnemy( Tile& to );
-		Tile *	closestUnit( Tile& to);
-
-
+		Tile *	getTile(int id);
 		Tile *	getTile(int x, int y);
+
 		Tile *	getValidTile(int x, int y);
 		Tile *	getUsableTile(int x, int y);
 
