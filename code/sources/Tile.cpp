@@ -3,7 +3,7 @@
 
 
 Tile::Tile(size_t nb_of_tiles)
-: left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999), isolated(false)
+: isolated(false), left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999)
 {
 
 }
@@ -105,10 +105,11 @@ int		Tile::countNeighborsUnits(int player)
 	return (count);
 }
 
-void	Tile::setPotentialUnits()
+int	Tile::potentialUnits()
 {
-	potential_units = (owner == ME ? units : - units); 
+	int potential_units = (owner == ME ? units : - units); 
 	potential_units += countNeighborsUnits(ME) - countNeighborsUnits(OPP);
+	return potential_units;
 }
 
 int		Tile::potentialSupport()
@@ -116,8 +117,14 @@ int		Tile::potentialSupport()
 	int count = 0;
 	for (auto& neighbor : getNeighbors())
 	{
-		if (neighbor->owner == ME && potential_units >= 0)
-			count += neighbor->potential_units;
+		if (neighbor->units)
+		{
+			int neighbor_support = neighbor->potentialUnits() - units;
+			if (neighbor_support > 0)
+			{
+				count += std::min(neighbor_support, neighbor->units);
+			}
+		}
 	}
 	return (count);
 }

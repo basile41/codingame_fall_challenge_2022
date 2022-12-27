@@ -11,6 +11,8 @@ Pour chaque case à moi à côté d'un robot ennemi :
 	Sinon
 		Si peux etre defendue par voisins :
 			Move à partir des voisins;
+		Si peux spawn assez
+			spawn
 		Sinon 
 			Aider les voisins
 

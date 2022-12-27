@@ -34,6 +34,29 @@ class Data
 
 		void	read();
 
+		void	build(Tile& tile)
+		{
+			if (my_matter >= 10)
+			{
+				tile.recycler = true;
+				tile.build();
+				my_matter -= 10;
+			}
+			else
+				debug("pas assez de matiere pour build");
+		}
+
+		void	spawn(Tile& tile, int amount)
+		{
+			if (my_matter >= 10 * amount)
+			{
+				tile.spawn(amount);
+				my_matter -= 10 * amount;
+			}
+			else
+				debug("pas assez de matiere pour spawn");
+		}
+
 		void	setAllDistance();
 
 		Tile *	getTile(int id);
