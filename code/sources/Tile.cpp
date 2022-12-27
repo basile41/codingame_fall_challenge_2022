@@ -105,6 +105,24 @@ int		Tile::countNeighborsUnits(int player)
 	return (count);
 }
 
+void	Tile::setPotentialUnits()
+{
+	potential_units = (owner == ME ? units : - units); 
+	potential_units += countNeighborsUnits(ME) - countNeighborsUnits(OPP);
+}
+
+int		Tile::potentialSupport()
+{
+	int count = 0;
+	for (auto& neighbor : getNeighbors())
+	{
+		if (neighbor->owner == ME && potential_units >= 0)
+			count += neighbor->potential_units;
+	}
+	return (count);
+}
+
+
 bool	Tile::isRecycledBy(int player)
 {
 	for (auto& neighbor : getNeighbors())

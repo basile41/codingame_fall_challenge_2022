@@ -20,6 +20,8 @@ class Tile
 		bool	can_build;
 		bool	can_spawn;
 		bool	in_range_of_recycler;
+
+		int		potential_units;
 		bool	recycled_by_opp;
 		bool	recycled_by_me;
 		bool	isolated;
@@ -53,6 +55,8 @@ class Tile
 		std::vector<Tile*>	getNeighbors(function_is_tile f_is_tile);
 
 		int		countNeighborsUnits(int player);
+		void	setPotentialUnits();
+		int		potentialSupport();
 		bool	isRecycledBy(int player);
 		bool	isNextTo(int player);
 		bool	isNextTo(function_is_tile f_is_tile);

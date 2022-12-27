@@ -1,4 +1,5 @@
 # include "includes.hpp"
+# include "Tile.hpp"
 
 void	message(std::string message)
 {

@@ -25,8 +25,6 @@ class Tile;
 class Data;
 class Graph;
 
-# include "Tile.hpp"
-# include "Graph.hpp"
 
 using std::cin;
 using std::cout;
