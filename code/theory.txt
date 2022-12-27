@@ -1,0 +1,9 @@
+Calculer nb de robots potentiels pour chaque case au tour suivant (les miens - les ennemis)
+
+Pour chaque case à moi à côté d'un robot ennemi :
+	Si case vide :
+		Si peux etre defendue par voisins :
+			Move à partir des voisins;
+		Sinon :
+			Build;
+	Sinon

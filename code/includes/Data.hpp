@@ -1,9 +1,9 @@
 #ifndef DATA_HPP
 # define DATA_HPP
 
-
-# include "Tile.hpp"
 # include "includes.hpp"
+# include "Tile.hpp"
+# include "Graph.hpp"
 
 bool is_tile(Tile *tile);
 
@@ -30,7 +30,11 @@ class Data
         std::vector<Tile*>	my_recyclers;
         std::vector<Tile*>	opp_recyclers;
 
+		Graph*	graph;
+
 		void	read();
+
+		void	setAllDistance();
 
 		Tile *	getTile(int id);
 		Tile *	getTile(int x, int y);
@@ -47,25 +51,11 @@ class Data
 
 		int		getRecycleRent(int id);
 
-		int		getDistance(int id1, int id2)
-		{
-			return (tiles[id1].distances[id2]);
-		}
+		int		getDistance(int id1, int id2);
 
-		bool	isFirstOfLine(Tile& my_tile, int dir_x)
-		{
-			int y = my_tile.y;
-			int border = -1;
+		Tile *	getClosest(Tile& start, function_is_tile is_tile);
 
-			if (dir_x == 1)
-				border = width;
-			for (int x = my_tile.x + dir_x ; x != border; x += dir_x)
-			{
-				if (getTile(x, y)->owner == 1 && getTile(x, y)->units)
-					return (false);
-			}
-			return (true);
-		}
+		bool	isFirstOfLine(Tile& my_tile, int dir_x);
 
 };
 

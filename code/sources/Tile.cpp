@@ -3,7 +3,7 @@
 
 
 Tile::Tile(size_t nb_of_tiles)
-: left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999)
+: left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999), isolated(false)
 {
 
 }
@@ -35,6 +35,9 @@ void	Tile::read()
 {
 	std::cin >> scrap_amount >> owner >> units >> recycler >> can_build >> can_spawn >> in_range_of_recycler;
 	std::cin.ignore();
+	recycled_by_opp = false;
+	recycled_by_me = false;
+	targeted = false;
 }
 
 void Tile::debug() const
@@ -81,9 +84,64 @@ std::vector<Tile*>	Tile::getNeighbors()
 	return (neighbors);
 }
 
+std::vector<Tile*>	Tile::getNeighbors(function_is_tile f_is_tile)
+{
+	std::vector<Tile*> neighbors;
+	for (auto& neighbor : {left, right, top, bottom})
+	{
+		if (neighbor && f_is_tile(*neighbor))
+			neighbors.push_back(neighbor);
+	}
+	return (neighbors);
+}
+int		Tile::countNeighborsUnits(int player)
+{
+	int count = 0;
+	for (auto& neighbor : getNeighbors())
+	{
+		if (neighbor->owner == player)
+			count += neighbor->units;
+	}
+	return (count);
+}
+
+bool	Tile::isRecycledBy(int player)
+{
+	for (auto& neighbor : getNeighbors())
+	{
+		if (neighbor->owner == player && is_recycler(*neighbor))
+			return (true);
+	}
+	return (false);
+}
+
+bool	Tile::isNextTo(int player)
+{
+	for (auto& neighbor : getNeighbors())
+	{
+		if (neighbor->owner == player)
+			return (true);
+	}
+	return (false);
+}
+
+bool	Tile::isNextTo(function_is_tile f_is_tile)
+{
+	for (auto& neighbor : getNeighbors())
+	{
+		if (f_is_tile(*neighbor))
+			return (true);
+	}
+	return (false);
+}
+
 int		Tile::getDistanceTo(int id)
 {
-	return (distances[id]);
+	return (distances.at(id));
+}
+int		Tile::getDistanceTo(Tile& tile)
+{
+	return (distances.at(tile.id));
 }
 
 

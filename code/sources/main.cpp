@@ -6,6 +6,7 @@
 int turn;
 int my_side;
 
+
 int main()
 {
 	int 	width;
@@ -20,29 +21,46 @@ int main()
 	// game loop
 	while (42)
 	{
+		
 		d.read();
+		Graph	graph;
+		init_graph(d, graph);
+		d.graph = &graph;
+		d.setAllDistance();
 
 
-		for (auto& neighbor : d.tiles[0].getNeighbors())
+// defense
+		// pour chacune de mes tuiles
+		for (auto& _my_tile : d.my_tiles) 
 		{
-			neighbor->debug();
-		}
+			Tile &	my_tile = *_my_tile;
 
-		// for (auto& tile : d.tiles)
-		// {
+			if (my_tile.can_build)
+			{
+				if (my_tile.isNextTo(OPP))
+				{
+					int opp_units = my_tile.countNeighborsUnits(OPP);
+					int my_units = my_tile.countNeighborsUnits(ME);
+					if (opp_units >= 2)
+					{
+						if (d.my_matter >= 10)
+						{
+							my_tile.build();
+							d.my_matter -= 10;
+						}
+						else if (my_units >= opp_units)
+						{
 
-		// 	if (make_is_tile( is_me, is_not(is_unit) )(tile))
-		// 	{
-		// 		for (auto& neighbor : tile.getNeighbors())
-		// 		{
-		// 			neighbor->debug();
-		// 		}
-		// 	}
-		// }
+							for (auto& _neighbors : my_tile.getNeighbors(make_is_tile(is_me, is_unit)))
+							{
 
-		for (auto& tile : d.my_units)
-		{
-			tile->move(1, *d.opp_tiles[0]);	 
+							}
+						}
+					}
+				}
+
+			}
+
 		}
 
 		message("🦊");

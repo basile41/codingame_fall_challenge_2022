@@ -1,13 +1,13 @@
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
 
-#undef _GLIBCXX_DEBUG                // disable run-time bound checking, etc
-#pragma GCC optimize("Ofast,inline") // Ofast = O3,fast-math,allow-store-data-races,no-protect-parens
+// #undef _GLIBCXX_DEBUG                // disable run-time bound checking, etc
+// #pragma GCC optimize("Ofast,inline") // Ofast = O3,fast-math,allow-store-data-races,no-protect-parens
 
-#pragma GCC target("bmi,bmi2,lzcnt,popcnt")                      // bit manipulation
-#pragma GCC target("movbe")                                      // byte swap
-#pragma GCC target("aes,pclmul,rdrnd")                           // encryption
-#pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
+// #pragma GCC target("bmi,bmi2,lzcnt,popcnt")                      // bit manipulation
+// #pragma GCC target("movbe")                                      // byte swap
+// #pragma GCC target("aes,pclmul,rdrnd")                           // encryption
+// #pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
 
 # include <bits/types/wint_t.h>
 # include <cstddef>
@@ -21,14 +21,19 @@
 # include <functional>
 # include <chrono>
 
+class Tile;
+class Data;
+class Graph;
+
 # include "Tile.hpp"
-# include "Data.hpp"
 # include "Graph.hpp"
 
 using std::cin;
 using std::cout;
 using std::cerr;
 using std::endl;
+
+using function_is_tile = std::function<bool(Tile& t)>;
 
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
@@ -37,9 +42,6 @@ static constexpr int NONE = -1;
 static constexpr int LEFT = 0;
 static constexpr int RIGHT = 1;
 
-class Tile;
-class Data;
-class Graph;
 
 
 template<typename T>

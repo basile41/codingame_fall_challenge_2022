@@ -83,6 +83,23 @@ void Data::read()
 	
 }
 
+void	Data::setAllDistance()
+{
+	for (auto& tile : tiles)
+		{
+			if (tile.scrap_amount && !tile.recycler)
+			{
+				for (auto& vertex : graph->vertices)
+					vertex.distance = 999;
+				bfs(*graph, tile.id);
+				for (auto& vertex : graph->vertices)
+				{
+					tile.distances[vertex.id] = vertex.distance;
+				}
+			}
+		}
+}
+
 
 Tile *	Data::getTile(int id)
 {
@@ -155,7 +172,7 @@ std::vector<int> Data::getNeighbors(int id, bool (*f)(Tile*), int dir_x, int dir
 	return (neighbors);
 }
 
-int	Data::getRecycleRent(int id)
+int		Data::getRecycleRent(int id)
 {
 	int	lost_tiles = 5;
 	int scraps_amount = tiles[id].scrap_amount;
@@ -174,3 +191,30 @@ int	Data::getRecycleRent(int id)
 	return (rent - lost_tiles * 10);
 }
 
+int		Data::getDistance(int id1, int id2)
+{
+	return (tiles.at(id1).getDistanceTo(id2));
+}
+
+Tile *	Data::getClosest(Tile& start, function_is_tile is_tile)
+{
+	int id = bfs(*graph, start.id, is_tile);
+	if (id == -1)
+		return (nullptr);
+	return (&tiles[id]);
+}
+
+bool	Data::isFirstOfLine(Tile& my_tile, int dir_x)
+{
+	int y = my_tile.y;
+	int border = -1;
+
+	if (dir_x == 1)
+		border = width;
+	for (int x = my_tile.x + dir_x ; x != border; x += dir_x)
+	{
+		if (getTile(x, y)->owner == 1 && getTile(x, y)->units)
+			return (false);
+	}
+	return (true);
+}

@@ -1,6 +1,7 @@
 # include "includes.hpp"
 
 # include "Graph.hpp"
+# include "Data.hpp"
 
 static int compteur_bfs = 0;
 
@@ -163,7 +164,7 @@ void	init_graph(Data& d, Graph& graph)
 	{
 		if (tile.scrap_amount && !tile.recycler)
 		{
-			for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile, d.dir_x, d.dir_y))
+			for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
 			{
 				graph.addEdge(tile.id, neighbor_id);
 			}

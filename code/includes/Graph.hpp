@@ -2,6 +2,7 @@
 # define GRAPH_HPP
 
 # include "includes.hpp"
+# include "Tile.hpp"
 
 class Edge;
 
