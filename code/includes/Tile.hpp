@@ -22,6 +22,7 @@ class Tile
 		bool	in_range_of_recycler;
 
 		// int		potential_units;
+
 		bool	recycled_by_opp;
 		bool	recycled_by_me;
 		bool	isolated;
@@ -32,6 +33,7 @@ class Tile
 		Tile*	bottom;
 		std::vector<Tile> *tiles;
 		std::vector<int> distances;
+		int		dist_to_start;
 
 		//Methods
 		void    move(int amount, const Tile& to);
@@ -52,14 +54,14 @@ class Tile
 		Tile*	getBottom();
 
 		std::vector<Tile*>	getNeighbors();
-		std::vector<Tile*>	getNeighbors(function_is_tile f_is_tile);
+		std::vector<Tile*>	getNeighbors(TileCondition is_matching);
 
 		int		countNeighborsUnits(int player);
 		int		potentialUnits();
 		int		potentialSupport();
 		bool	isRecycledBy(int player);
 		bool	isNextTo(int player);
-		bool	isNextTo(function_is_tile f_is_tile);
+		bool	isNextTo(TileCondition is_matching);
 
 		int		getDistanceTo(int id);
 		int		getDistanceTo(Tile& tile);

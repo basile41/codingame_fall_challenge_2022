@@ -49,7 +49,7 @@ int bfs(Graph &graph, int startId)
 	return (-1);
 }
 
-int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> to_find)
+int bfs(Graph &graph, int startId, TileCondition is_matching)
 {
 	// Initialize a queue for BFS and a set to store visited vertices
 	std::queue<Vertex*> q;
@@ -77,7 +77,7 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> to_find)
 		// std::cerr << "distance =  " << v->distance << std::endl;
 		// std::cerr << "id " << graph.tiles->at(v->id).id << std::endl;
 		// std::cerr << "owner " << graph.tiles->at(v->id).owner << std::endl;
-		if (to_find(graph.tiles->at(v->id)))
+		if (is_matching(graph.tiles->at(v->id)))
 		{
 			return (v->id);
 		}
@@ -97,7 +97,7 @@ int bfs(Graph &graph, int startId, std::function<bool (Tile &tile)> to_find)
 	return (-1);
 }
 
-int bfs(Graph &graph, int startId, int targetId, std::function<bool (Tile &tile)> to_find)
+int bfs(Graph &graph, int startId, int targetId, TileCondition is_matching)
 {
 	int dist_to_target = graph.tiles->at(startId).distances.at(targetId);
 	// Initialize a queue for BFS and a set to store visited vertices
@@ -126,7 +126,7 @@ int bfs(Graph &graph, int startId, int targetId, std::function<bool (Tile &tile)
 		// std::cerr << "distance =  " << v->distance << std::endl;
 		// std::cerr << "id " << graph.tiles->at(v->id).id << std::endl;
 		// std::cerr << "owner " << graph.tiles->at(v->id).owner << std::endl;
-		if (to_find(graph.tiles->at(v->id)))
+		if (is_matching(graph.tiles->at(v->id)))
 		{
 			if (v->distance + graph.tiles->at(v->id).distances.at(targetId) == dist_to_target) // si la case trouvé me rapproche de la cible
 				return (v->id);

@@ -20,6 +20,7 @@ class Data
 		int		my_side;
 		int		dir_x;
 		int		dir_y;
+		int		dist_start_to_center;
 
         std::vector<Tile>	tiles;
         std::vector<Tile*>	my_tiles;
@@ -29,6 +30,7 @@ class Data
         std::vector<Tile*>	opp_units;
         std::vector<Tile*>	my_recyclers;
         std::vector<Tile*>	opp_recyclers;
+        std::vector<Tile*>	mid_tiles;
 
 		Graph*	graph;
 
@@ -58,9 +60,30 @@ class Data
 		}
 
 		void	setAllDistance();
+		void	setMidTiles();
+
+		Tile *	closestMidTileTo(Tile& tile, bool accept_targeted = true)
+		{
+			Tile*	closest = nullptr;
+			int dist_min = 999;
+			for (auto& mid_tile : mid_tiles)
+			{
+				if (is_tile(*mid_tile) && (accept_targeted || mid_tile->owner != TARGETED) && !is_recycler(*mid_tile) )
+				{
+					int dist = tile.getDistanceTo(*mid_tile);
+					if (dist < dist_min)
+					{
+						dist_min = dist;
+						closest = mid_tile;
+					}
+				}
+			}
+			return closest;
+		}
 
 		Tile *	getTile(int id);
 		Tile *	getTile(int x, int y);
+		std::vector<Tile*>	getTilesIf(TileCondition is_matching);
 
 		Tile *	getValidTile(int x, int y);
 		Tile *	getUsableTile(int x, int y);
@@ -76,7 +99,7 @@ class Data
 
 		int		getDistance(int id1, int id2);
 
-		Tile *	getClosest(Tile& start, function_is_tile is_tile);
+		Tile *	getClosest(Tile& start, TileCondition is_matching);
 
 		bool	isFirstOfLine(Tile& my_tile, int dir_x);
 

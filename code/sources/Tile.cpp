@@ -84,12 +84,12 @@ std::vector<Tile*>	Tile::getNeighbors()
 	return (neighbors);
 }
 
-std::vector<Tile*>	Tile::getNeighbors(function_is_tile f_is_tile)
+std::vector<Tile*>	Tile::getNeighbors(TileCondition is_matching)
 {
 	std::vector<Tile*> neighbors;
 	for (auto& neighbor : {left, right, top, bottom})
 	{
-		if (neighbor && f_is_tile(*neighbor))
+		if (neighbor && is_matching(*neighbor))
 			neighbors.push_back(neighbor);
 	}
 	return (neighbors);
@@ -150,11 +150,11 @@ bool	Tile::isNextTo(int player)
 	return (false);
 }
 
-bool	Tile::isNextTo(function_is_tile f_is_tile)
+bool	Tile::isNextTo(TileCondition is_matching)
 {
 	for (auto& neighbor : getNeighbors())
 	{
-		if (f_is_tile(*neighbor))
+		if (is_matching(*neighbor))
 			return (true);
 	}
 	return (false);

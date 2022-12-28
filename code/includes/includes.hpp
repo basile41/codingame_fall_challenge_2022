@@ -31,11 +31,13 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-using function_is_tile = std::function<bool(Tile& t)>;
+using TileCondition = std::function<bool(Tile& t)>;
+using TileCompare = std::function<bool(Tile& t1, Tile& t2)>;
 
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
 static constexpr int NONE = -1;
+static constexpr int TARGETED = -2;
 
 static constexpr int LEFT = 0;
 static constexpr int RIGHT = 1;
@@ -79,8 +81,8 @@ bool	is_my_empty_tile(Tile* tile);
 bool	is_empty_opp(Tile* tile);
 
 int		bfs(Graph &graph, int startId);
-int 	bfs(Graph &graph, int startId, std::function<bool (Tile &tile)>);
-int		bfs(Graph &graph, int startId, int targetId, std::function<bool (Tile &tile)> to_find);
+int 	bfs(Graph &graph, int startId, TileCondition is_matching);
+int		bfs(Graph &graph, int startId, int targetId, TileCondition is_matching);
 
 
 void	init_graph(Data& d, Graph& graph);
@@ -90,26 +92,26 @@ void 	nb_bfs();
 
 
 template <typename T>
-std::function<bool (Tile &tile)> make_is_tile(T&& first)
+TileCondition make_is_matching(T&& first)
 {
 	return first;
 }
 
 template <typename T, typename... Args>
-std::function<bool (Tile &tile)> make_is_tile(T&& first, Args&&... args)
+TileCondition make_is_matching(T&& first, Args&&... args)
 {
 	return (	
 		[&](Tile &tile)->bool 
 		{
-			return ( first(tile) && make_is_tile(std::forward<Args>(args)...)(tile) );
+			return ( first(tile) && make_is_matching(std::forward<Args>(args)...)(tile) );
 		} 
 		);
 }
 
 template <typename T>
-std::function<bool (Tile &tile)> is_not(T&& f)
+TileCondition is_not(T&& f)
 {
-	return std::not1((std::function<bool (Tile &tile)>)f);
+	return std::not1((TileCondition)f);
 }
 
 

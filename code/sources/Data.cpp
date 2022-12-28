@@ -100,6 +100,30 @@ void	Data::setAllDistance()
 		}
 }
 
+void	Data::setMidTiles()
+{
+	dist_start_to_center = 999;
+	Tile& my_start = *my_tiles[2];
+	Tile& opp_start = *opp_tiles[2];
+
+	for (auto& tile : tiles)
+	{
+		if (is_tile(tile))
+		{
+			int	dist_to_my_start = my_start.getDistanceTo(tile);
+			int	dist_to_opp_start = opp_start.getDistanceTo(tile);
+
+			if (dist_to_my_start == dist_to_opp_start ||
+				dist_to_my_start == dist_to_opp_start + 1 )
+			{
+				mid_tiles.push_back(&tile);
+				tile.dist_to_start = dist_to_my_start;
+				dist_start_to_center = std::min(dist_start_to_center, dist_to_my_start);
+			}
+		}
+	}
+}
+
 
 Tile *	Data::getTile(int id)
 {
@@ -115,6 +139,18 @@ Tile *	Data::getTile(int x, int y)
 	return (&tiles[y * width + x]);
 }
 
+std::vector<Tile*>	Data::getTilesIf(TileCondition is_matching)
+{
+	std::vector<Tile*> t;
+	for (auto& tile : tiles)
+	{
+		if (is_matching(tile))
+		{
+			t.push_back(&tile);
+		}
+	}
+	return t;
+}
 
 Tile *	Data::getValidTile(int x, int y)
 {
@@ -196,9 +232,9 @@ int		Data::getDistance(int id1, int id2)
 	return (tiles.at(id1).getDistanceTo(id2));
 }
 
-Tile *	Data::getClosest(Tile& start, function_is_tile is_tile)
+Tile *	Data::getClosest(Tile& start, TileCondition is_matching)
 {
-	int id = bfs(*graph, start.id, is_tile);
+	int id = bfs(*graph, start.id, is_matching);
 	if (id == -1)
 		return (nullptr);
 	return (&tiles[id]);
