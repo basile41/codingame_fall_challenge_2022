@@ -55,6 +55,8 @@ class Tile
 
 		std::vector<Tile*>	getNeighbors();
 		std::vector<Tile*>	getNeighbors(TileCondition is_matching);
+		std::vector<Tile*>	getNeighbors(TileCondition is_matching, TileCondition priority);
+
 
 		int		countNeighborsUnits(int player);
 		int		potentialUnits();

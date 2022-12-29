@@ -164,14 +164,40 @@ void	init_graph(Data& d, Graph& graph)
 	{
 		if (tile.scrap_amount && !tile.recycler)
 		{
-			for (auto &neighbor : tile.getNeighbors(make_is_matching(is_neutral, is_walkable)))
+			// if (&tile == d.my_units.back()) //test
+			// {
+			// 	std::vector<Tile *> tmp = tile.getNeighbors(make_is_matching(is_neutral, is_walkable));
+			// 	std::vector<Tile *> neighbors;
+			// 	for(auto it = tmp.begin(); it != tmp.end(); it++)
+			// 	{
+			// 		if ((*it)->x == tile.x)
+			// 			neighbors.push_back(*it);
+			// 	}
+			// 	for(auto it = tmp.begin(); it != tmp.end(); it++)
+			// 	{
+			// 		if ((*it)->y == tile.y)
+			// 			neighbors.push_back(*it);
+			// 	}
+
+			// 	for (auto &neighbor : neighbors)
+			// 	{
+			// 		graph.addEdge(tile.id, neighbor->id);
+			// 	}
+			// }
+
+			for (auto &neighbor : tile.getNeighbors(is_walkable, is_neutral))
 			{
 				graph.addEdge(tile.id, neighbor->id);
 			}
-			for (auto &neighbor : tile.getNeighbors(make_is_matching(is_not(is_neutral), is_walkable)))
-			{
-				graph.addEdge(tile.id, neighbor->id);
-			}
+
+			// for (auto &neighbor : tile.getNeighbors(make_is_matching(is_neutral, is_walkable)))
+			// {
+			// 	graph.addEdge(tile.id, neighbor->id);
+			// }
+			// for (auto &neighbor : tile.getNeighbors(make_is_matching(is_not(is_neutral), is_walkable)))
+			// {
+			// 	graph.addEdge(tile.id, neighbor->id);
+			// }
 		}
 	}
 }

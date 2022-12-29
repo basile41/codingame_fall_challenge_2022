@@ -42,17 +42,21 @@ int main()
 		
 		d.read();
 
-    // temps courant, avant l'execution
-    std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_clock::now();
+// temps courant, avant l'execution
+std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_clock::now();
+
 		Graph	graph;
 		init_graph(d, graph);
 		d.graph = &graph;
 
+		d.setAllDistance();
 		if (turn == 0)
 		{
-			d.setAllDistance();
 			d.setMidTiles();
 		}
+
+		// test voisins prioritaires
+		
 
 
 // defense
@@ -176,6 +180,8 @@ int main()
 			return (_comp_dist_to_mid(*t1, *t2));
 		};
 
+		int first_unit = d.my_tiles.front()->id;
+		int last_unit = d.my_tiles.back()->id;
 		std::sort(d.my_units.begin(), d.my_units.end(), comp_dist_to_mid);
 		std::sort(d.my_tiles.begin(), d.my_tiles.end(), comp_dist_to_mid);
 
@@ -183,35 +189,64 @@ int main()
 // spread
 		for (auto& my_unit : d.my_units)
 		{
-			// debug("my_unit :", *my_unit);
+			debug("my_unit :", *my_unit);
 			// debug("my_unit->units :", my_unit->units);
 
-			for (auto& neighbor : my_unit->getNeighbors(is_neutral))
+
+			std::vector<Tile *> neighbors = my_unit->getNeighbors(is_neutral);
+
+			if (my_unit->id == last_unit || my_unit->id == first_unit) //test
 			{
+				std::vector<Tile *> tmp(neighbors);
+				neighbors.clear();
+				for(auto it = tmp.begin(); it != tmp.end(); it++)
+				{
+					if ((*it)->x == my_unit->x)
+					{
+						neighbors.push_back(*it);
+						debug("x", **it);
+
+					}
+				}
+				for(auto it = tmp.begin(); it != tmp.end(); it++)
+				{
+					if ((*it)->y == my_unit->y)
+					{
+						neighbors.push_back(*it);
+						debug("y", **it);
+
+					}
+				}
+			}
+			
+
+			for (auto& neighbor : neighbors)
+			{
+				debug("neighbor :", *neighbor);
 				if (is_neutral(*neighbor))
 				{
-					// debug("neighbor :", *neighbor);
+					debug("neighbor :", *neighbor);
 
 					Tile* closest_mid_to_my_unit = d.closestMidTileTo(*my_unit);
 					Tile* closest_mid_to_neighbor = d.closestMidTileTo(*neighbor);
 					if (closest_mid_to_neighbor == nullptr)
 						continue ;
 					
-					// debug("closest_mid :", *closest_mid_to_neighbor);
+					debug("closest_mid :", *closest_mid_to_neighbor);
 
-					// debug(d.closestMidTileTo(*neighbor)->getDistanceTo(*neighbor),
-					// 	d.closestMidTileTo(*my_unit)->getDistanceTo(*my_unit));
+					debug(d.closestMidTileTo(*neighbor)->getDistanceTo(*neighbor),
+						d.closestMidTileTo(*my_unit)->getDistanceTo(*my_unit));
 
 					if (d.closestMidTileTo(*neighbor)->getDistanceTo(*neighbor) <=
 						d.closestMidTileTo(*my_unit)->getDistanceTo(*my_unit) )
 					{
 						
-						// debug("doit etre egal à turn pour spawn : ", my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1);
+						debug("doit etre egal à turn pour spawn : ", my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1);
 						if (my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1 == -turn)
 						{
 							if (my_unit->units >= 1)
 							{
-								// debug("move");
+								debug("move");
 								my_unit->move(1, *neighbor);
 								my_unit->units--;
 								neighbor->owner = TARGETED;
@@ -219,7 +254,7 @@ int main()
 							}
 							else if (d.my_matter >= 10)
 							{
-								// debug("spawn");
+								debug("spawn");
 								d.spawn(*my_unit, 1);
 								neighbor->owner = TARGETED;
 								closest_mid_to_neighbor->owner = TARGETED;
@@ -238,7 +273,8 @@ int main()
 
 				}
 			}
-		}
+		} // temps courant, apres l'execution
+   
 // fin spread
 
 		// while (d.my_matter >= 10)
@@ -327,6 +363,8 @@ int main()
 		{
 			for (auto& _my_tile : d.my_tiles)
 			{
+				if (d.my_matter < 10)
+					break ;
 				Tile& my_tile = *_my_tile;
 				if (my_tile.isolated && !is_unit(my_tile) && !is_recycler(my_tile))
 				{
@@ -342,11 +380,12 @@ int main()
 
 		message("🦊");
 
-    // temps courant, apres l'execution
-    std::chrono::high_resolution_clock::time_point b= std::chrono::high_resolution_clock::now();
-    
-    // mesurer la difference, et l'exprimer en microsecondes 
-    float time= (float)std::chrono::duration_cast<std::chrono::microseconds>(b - a).count() / 1000;
+		nb_bfs();
+// temps courant, apres l'execution
+std::chrono::high_resolution_clock::time_point b= std::chrono::high_resolution_clock::now();
+
+// mesurer la difference, et l'exprimer en microsecondes 
+float time= (float)std::chrono::duration_cast<std::chrono::microseconds>(b - a).count() / 1000;
 
 	std::cerr << "temps d exec : " << time << " ms" << std::endl;
 		std::cout << "WAIT;" << std::endl;

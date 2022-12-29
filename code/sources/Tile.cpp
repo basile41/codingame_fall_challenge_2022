@@ -94,6 +94,25 @@ std::vector<Tile*>	Tile::getNeighbors(TileCondition is_matching)
 	}
 	return (neighbors);
 }
+
+std::vector<Tile*>	Tile::getNeighbors(TileCondition is_matching, TileCondition priority)
+{
+	std::vector<Tile*> neighbors;
+	for (auto& neighbor : {left, right, top, bottom})
+	{
+		if (neighbor && is_matching(*neighbor))
+		{
+			if (priority(*neighbor))
+			{
+				neighbors.insert(neighbors.begin(), neighbor);
+			}
+			else
+				neighbors.push_back(neighbor);
+		}
+	}
+	return (neighbors);
+}
+
 int		Tile::countNeighborsUnits(int player)
 {
 	int count = 0;
