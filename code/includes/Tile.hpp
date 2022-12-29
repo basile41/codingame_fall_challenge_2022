@@ -22,7 +22,7 @@ class Tile
 		bool	in_range_of_recycler;
 
 		// int		potential_units;
-
+		int		def_units;
 		bool	recycled_by_opp;
 		bool	recycled_by_me;
 		bool	isolated;

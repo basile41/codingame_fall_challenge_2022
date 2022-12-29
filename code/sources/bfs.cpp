@@ -164,9 +164,13 @@ void	init_graph(Data& d, Graph& graph)
 	{
 		if (tile.scrap_amount && !tile.recycler)
 		{
-			for (auto &neighbor_id : d.getNeighbors(tile.id, is_usable_tile))
+			for (auto &neighbor : tile.getNeighbors(make_is_matching(is_neutral, is_walkable)))
 			{
-				graph.addEdge(tile.id, neighbor_id);
+				graph.addEdge(tile.id, neighbor->id);
+			}
+			for (auto &neighbor : tile.getNeighbors(make_is_matching(is_not(is_neutral), is_walkable)))
+			{
+				graph.addEdge(tile.id, neighbor->id);
 			}
 		}
 	}

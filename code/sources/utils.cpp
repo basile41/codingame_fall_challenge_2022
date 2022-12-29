@@ -37,6 +37,11 @@ bool	is_recycler(Tile& tile)
 	return (is_tile(tile) && tile.recycler);
 }
 
+bool	is_walkable(Tile& tile)
+{
+	return (is_tile(tile) && !is_recycler(tile));
+}
+
 // bool	is_recycled_by_me(Tile& tile)
 // {
 // 	if (is_tile(tile))

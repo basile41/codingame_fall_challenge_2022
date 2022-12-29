@@ -2,7 +2,7 @@
 #include "Data.hpp"
 
 Data::Data(int width, int height)
-: width(width), height(height), size(width * height), tiles(size, Tile(size))
+: width(width), height(height), size(width * height), turn(-1), tiles(size, Tile(size))
 {
 	int id = 0;
 	for (int y = 0; y < height; y++)
@@ -32,6 +32,7 @@ Data::Data(int width, int height)
 
 void Data::read()
 {
+	turn++;
 	int id = 0;
 	std::cin >> my_matter >> opp_matter;
 	std::cin.ignore();
@@ -49,7 +50,7 @@ void Data::read()
 			Tile* tile = &tiles[id];
 			tile->read();
 			tile->targeted = false;
-
+			tile->def_units = 0;
 			if (tile->owner == ME)
 			{
 				my_tiles.push_back(tile);

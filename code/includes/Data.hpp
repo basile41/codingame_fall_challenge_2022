@@ -15,6 +15,7 @@ class Data
 		int 	width;
 		int 	height;
 		int		size;
+		int		turn;
 		int		my_matter;
 		int		opp_matter;
 		int		my_side;
@@ -70,7 +71,7 @@ class Data
 			{
 				if (is_tile(*mid_tile) && (accept_targeted || mid_tile->owner != TARGETED) && !is_recycler(*mid_tile) )
 				{
-					int dist = tile.getDistanceTo(*mid_tile);
+					int dist = tile.getDistanceTo(*mid_tile) - mid_tile->dist_to_start;
 					if (dist < dist_min)
 					{
 						dist_min = dist;
