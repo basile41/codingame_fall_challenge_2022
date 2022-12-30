@@ -53,8 +53,8 @@ class Tile
 		Tile*	getTop();
 		Tile*	getBottom();
 
-		std::vector<Tile*>	getNeighbors();
-		std::vector<Tile*>	getNeighbors(TileCondition is_matching);
+		std::vector<Tile*>	getNeighbors(TileCondition is_matching, bool reverse = 0);
+		std::vector<Tile*>	getNeighbors(bool reverse = 0);
 		std::vector<Tile*>	getNeighbors(TileCondition is_matching, TileCondition priority);
 
 

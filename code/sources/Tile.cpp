@@ -28,6 +28,7 @@ void	Tile::build()
 }
 void	Tile::spawn(int amount)
 {
+	std::cerr << "SPAWN " << amount << *this << ";" << endl;
 	std::cout << "SPAWN " << amount << *this << ";";
 }
 
@@ -73,10 +74,15 @@ Tile*	Tile::getBottom()
 	return bottom;
 }
 
-std::vector<Tile*>	Tile::getNeighbors()
+std::vector<Tile*>	Tile::getNeighbors(bool reverse)
 {
+	std::vector<Tile*> tmp;
+	if (reverse)
+		tmp = {left, right, bottom, top};
+	else
+		tmp = {left, right, top, bottom};
 	std::vector<Tile*> neighbors;
-	for (auto& neighbor : {left, right, top, bottom})
+	for (auto& neighbor : tmp)
 	{
 		if (neighbor)
 			neighbors.push_back(neighbor);
@@ -84,10 +90,10 @@ std::vector<Tile*>	Tile::getNeighbors()
 	return (neighbors);
 }
 
-std::vector<Tile*>	Tile::getNeighbors(TileCondition is_matching)
+std::vector<Tile*>	Tile::getNeighbors(TileCondition is_matching, bool reverse)
 {
 	std::vector<Tile*> neighbors;
-	for (auto& neighbor : {left, right, top, bottom})
+	for (auto& neighbor : getNeighbors(reverse))
 	{
 		if (neighbor && is_matching(*neighbor))
 			neighbors.push_back(neighbor);
