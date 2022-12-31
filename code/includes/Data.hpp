@@ -39,14 +39,14 @@ class Data
 
 		void	build(Tile& tile)
 		{
-			if (my_matter >= 10)
+			if (my_matter >= 10 && !is_recycler(tile))
 			{
 				tile.recycler = true;
 				tile.build();
 				my_matter -= 10;
 			}
 			else
-				debug("pas assez de matiere pour build");
+				debug("impossible de build", tile);
 		}
 
 		void	spawn(Tile& tile, int amount)

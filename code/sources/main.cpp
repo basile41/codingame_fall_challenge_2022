@@ -126,7 +126,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 			int max_rent_id;
 			for (auto& my_tile : d.my_tiles)
 			{
-				if (my_tile->units == 0 && !my_tile->isolated)
+				if (my_tile->units == 0 && !my_tile->isolated && !is_recycler(*my_tile))
 				{
 					int rent = d.getRecycleRent(my_tile->id);
 
@@ -180,8 +180,48 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 			return (_comp_dist_to_mid(*t1, *t2));
 		};
 
-		int first_unit = d.my_tiles.front()->id;
-		int last_unit = d.my_tiles.back()->id;
+// set les unités primaires
+		int first_unit = -1;
+		int head_unit = -1;
+		int last_unit = -1;
+
+		std::vector<Tile*> parents;
+		for (auto& my_unit : d.my_units)
+		{
+			Tile* closest_mid_to_my_unit = d.closestMidTileTo(*my_unit);
+			if (closest_mid_to_my_unit == nullptr)
+				break;
+			if (my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1 == -turn)
+			{
+				parents.push_back(my_unit);
+			}
+		}
+		debug("nombre de parents", parents.size());
+		if (parents.size() == 3)
+		{
+			first_unit = parents[0]->id;
+			head_unit = parents[1]->id;
+			last_unit = parents[2]->id;
+
+			debug("first_unit" , d.tiles.at(first_unit));
+			debug("head_unit" , d.tiles.at(head_unit));
+			debug("last_unit" , d.tiles.at(last_unit));
+
+		}
+		else if (parents.size() == 2)
+		{
+			first_unit = parents[0]->id;
+			last_unit = parents[1]->id;
+
+			debug("first_unit" , d.tiles.at(first_unit));
+			debug("last_unit" , d.tiles.at(last_unit));
+		}
+		else if (parents.size() == 2)
+		{
+			head_unit = parents[1]->id;
+			debug("head_unit" , d.tiles.at(head_unit));
+		}
+
 		std::sort(d.my_units.begin(), d.my_units.end(), comp_dist_to_mid);
 		std::sort(d.my_tiles.begin(), d.my_tiles.end(), comp_dist_to_mid);
 
@@ -189,12 +229,15 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 // spread
 		for (auto& my_unit : d.my_units)
 		{
+			Tile* closest_mid_to_my_unit = d.closestMidTileTo(*my_unit);
+
 			debug("my_unit :", *my_unit);
 			// debug("my_unit->units :", my_unit->units);
 
 
 			std::vector<Tile *> neighbors = my_unit->getNeighbors(is_neutral);
 
+			// tri des voisins
 			if (my_unit->id == last_unit || my_unit->id == first_unit) //test
 			{
 				std::vector<Tile *> tmp(neighbors);
@@ -218,8 +261,19 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					}
 				}
 			}
+			else if (my_unit->id != head_unit)
+			{
+				if (neighbors.size() == 2)
+				{
+					// std::vector<Tile*> neighbors0 = neighbors[0]->getNeighbors(is_me);
+					// std::vector<Tile*> neighbors1 = neighbors[1]->getNeighbors(is_me);
+					if (neighbors[0]->getNeighbors(is_me).size() >= 2)
+						if (neighbors[1]->getNeighbors(is_me).size() == 1)
+							std::swap(neighbors[0], neighbors[1]);
+				}
+			}
 			
-
+			// debut spread
 			for (auto& neighbor : neighbors)
 			{
 				debug("neighbor :", *neighbor);
@@ -227,18 +281,20 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 				{
 					debug("neighbor :", *neighbor);
 
-					Tile* closest_mid_to_my_unit = d.closestMidTileTo(*my_unit);
 					Tile* closest_mid_to_neighbor = d.closestMidTileTo(*neighbor);
 					if (closest_mid_to_neighbor == nullptr)
 						continue ;
 					
 					debug("closest_mid :", *closest_mid_to_neighbor);
 
-					debug(d.closestMidTileTo(*neighbor)->getDistanceTo(*neighbor),
-						d.closestMidTileTo(*my_unit)->getDistanceTo(*my_unit));
+					debug(closest_mid_to_neighbor->dist_to_start - closest_mid_to_neighbor->getDistanceTo(*neighbor) -1,
+						closest_mid_to_my_unit->dist_to_start - closest_mid_to_my_unit->getDistanceTo(*my_unit));
 
-					if (d.closestMidTileTo(*neighbor)->getDistanceTo(*neighbor) <=
-						d.closestMidTileTo(*my_unit)->getDistanceTo(*my_unit) )
+					// if (d.closestMidTileTo(*neighbor)->getDistanceTo(*neighbor) <=
+					// 	d.closestMidTileTo(*my_unit)->getDistanceTo(*my_unit) )
+
+					if (closest_mid_to_neighbor->dist_to_start - closest_mid_to_neighbor->getDistanceTo(*neighbor) -1 >=
+						closest_mid_to_my_unit->dist_to_start - closest_mid_to_my_unit->getDistanceTo(*my_unit))
 					{
 						
 						debug("doit etre egal à turn pour spawn : ", my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1);
@@ -273,7 +329,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 
 				}
 			}
-		} // temps courant, apres l'execution
+		}
    
 // fin spread
 
@@ -300,11 +356,11 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 				}
 				else
 				{
-					for (auto& neighbor : my_unit->getNeighbors(is_neutral))
-					{
-						my_unit->move(1, *neighbor);
-						my_unit->units--;
-					}
+					// for (auto& neighbor : my_unit->getNeighbors(is_neutral))
+					// {
+					// 	my_unit->move(1, *neighbor);
+					// 	my_unit->units--;
+					// }
 					if (my_unit->units >= 1)
 					{
 						Tile* closest = d.getClosest(*my_unit, is_opp);

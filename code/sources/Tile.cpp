@@ -12,23 +12,33 @@ Tile::Tile(size_t nb_of_tiles)
 void    Tile::move(int amount, const Tile& to)
 {
 	std::cout << "MOVE " << amount << *this << to.x << " " << to.y << ";";
+	if (DEBUG)
+		std::cerr << "MOVE " << amount << *this << to.x << " " << to.y << ";" << endl;
 }
 void    Tile::move(int amount, int x, int y)
 {
 	std::cout << "MOVE " << amount << *this << x << " " << y << ";";
+	if (DEBUG)
+		std::cerr << "MOVE " << amount << *this << x << " " << y << ";" << endl;
 }
 void    Tile::move(int amount, int id)
 {
 	std::cout << "MOVE " << amount << *this << tiles->at(id).x << " " << tiles->at(id).y << ";";
+	if (DEBUG)
+		std::cerr << "MOVE " << amount << *this << tiles->at(id).x << " " << tiles->at(id).y << ";" << endl;
 }
 
 void	Tile::build()
 {
 	std::cout << "BUILD" << *this << ";";
+	if (DEBUG)
+		std::cerr << "BUILD" << *this << ";" << endl;
 }
 void	Tile::spawn(int amount)
 {
 	std::cout << "SPAWN " << amount << *this << ";";
+	if (DEBUG)
+		std::cerr << "SPAWN " << amount << *this << ";" << endl;
 }
 
 void	Tile::read()
