@@ -3,8 +3,6 @@
 #include "Tile.hpp"
 #include "Data.hpp"
 
-int turn;
-int my_side;
 
 void	move_support_from_neighbor(Tile& tile, int required)
 {
@@ -27,6 +25,7 @@ void	move_support_from_neighbor(Tile& tile, int required)
 
 int main()
 {
+	int		turn;
 	int 	width;
 	int 	height;
 
@@ -210,15 +209,22 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 		}
 		else if (parents.size() == 2)
 		{
-			first_unit = parents[0]->id;
-			last_unit = parents[1]->id;
+			TilePtrCompare comp = [=](Tile *t1, Tile *t2)->bool
+			{
+				if (d.my_side)
+					return (t1->x < t2->x);
+				return (t1->x > t2->x);
+			};
+			std::sort(parents.begin(), parents.end(), comp);
+			last_unit = parents[0]->id;
+			head_unit = parents[1]->id;
 
-			debug("first_unit" , d.tiles.at(first_unit));
+			debug("head_unit" , d.tiles.at(head_unit));
 			debug("last_unit" , d.tiles.at(last_unit));
 		}
-		else if (parents.size() == 2)
+		else if (parents.size() == 1)
 		{
-			head_unit = parents[1]->id;
+			head_unit = parents[0]->id;
 			debug("head_unit" , d.tiles.at(head_unit));
 		}
 

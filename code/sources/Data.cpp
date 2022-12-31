@@ -81,6 +81,9 @@ void Data::read()
 			}
 		}
 	}
+	if (turn == 0)
+		my_side = (my_tiles[2]->x < width / 2);
+	debug("my_side:", my_side);
 	
 }
 
@@ -215,8 +218,12 @@ int		Data::getRecycleRent(int id)
 	int scraps_amount = tiles[id].scrap_amount;
 	int rent = scraps_amount;
 
+	if (tiles[id].isRecycledBy(ME))
+		rent -= scraps_amount;
 	for (auto& neighbor : getNeighbors(id, is_tile))
 	{
+		if (tiles[neighbor].isRecycledBy(ME))
+			rent -= scraps_amount;
 		if (tiles[neighbor].scrap_amount > scraps_amount)
 		{
 			rent += scraps_amount;
