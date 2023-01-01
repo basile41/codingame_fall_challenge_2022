@@ -27,6 +27,11 @@ bool	is_neutral(Tile& tile)
 	return (is_tile(tile) && tile.owner == NONE);
 }
 
+bool	is_targeted(Tile& tile)
+{
+	return (is_tile(tile) && tile.owner == TARGETED);
+}
+
 bool	is_unit(Tile& tile)
 {
 	return (is_tile(tile) && tile.units > 0);
@@ -40,6 +45,16 @@ bool	is_recycler(Tile& tile)
 bool	is_walkable(Tile& tile)
 {
 	return (is_tile(tile) && !is_recycler(tile));
+}
+
+bool	is_mid_tile(Tile& tile)
+{
+	return (is_tile(tile) && !is_recycler(tile) && tile.is_mid_tile);
+}
+
+bool	is_almost_grass(Tile& tile)
+{
+	return (is_tile(tile) && tile.scrap_amount == 1 && (tile.in_range_of_recycler || tile.isRecycledBy(ME)));
 }
 
 // bool	is_recycled_by_me(Tile& tile)

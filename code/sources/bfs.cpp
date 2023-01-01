@@ -185,7 +185,7 @@ void	init_graph(Data& d, Graph& graph)
 			// 	}
 			// }
 
-			for (auto &neighbor : tile.getNeighbors(is_walkable, is_neutral))
+			for (auto &neighbor : tile.getNeighbors(make_is_matching(is_walkable, is_not(is_almost_grass)), is_neutral))
 			{
 				graph.addEdge(tile.id, neighbor->id);
 			}

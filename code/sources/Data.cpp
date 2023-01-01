@@ -25,7 +25,7 @@ Data::Data(int width, int height)
 				tile->top = top;
 				top->bottom = tile;
 			}
-
+			tile->tiles = &tiles;
 		}
 	}
 }
@@ -120,6 +120,7 @@ void	Data::setMidTiles()
 			if (dist_to_my_start == dist_to_opp_start ||
 				dist_to_my_start == dist_to_opp_start + 1 )
 			{
+				tile.is_mid_tile = true;
 				mid_tiles.push_back(&tile);
 				tile.dist_to_start = dist_to_my_start;
 				dist_start_to_center = std::min(dist_start_to_center, dist_to_my_start);

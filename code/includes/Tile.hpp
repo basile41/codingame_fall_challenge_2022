@@ -22,6 +22,7 @@ class Tile
 		bool	in_range_of_recycler;
 
 		// int		potential_units;
+		bool	is_mid_tile;
 		int		def_units;
 		bool	recycled_by_opp;
 		bool	recycled_by_me;
@@ -64,6 +65,19 @@ class Tile
 		bool	isRecycledBy(int player);
 		bool	isNextTo(int player);
 		bool	isNextTo(TileCondition is_matching);
+
+		bool	isNearestThan(Tile& tile, TileCondition is_matching)
+		{
+			for (auto& current : *tiles)
+			{
+				if (&current != &tile && is_matching(current))
+				{
+					if (this->getDistanceTo(current) < tile.getDistanceTo(current))
+						return true;
+				}
+			}
+			return false;
+		}
 
 		int		getDistanceTo(int id);
 		int		getDistanceTo(Tile& tile);

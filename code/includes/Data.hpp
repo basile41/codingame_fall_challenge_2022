@@ -82,6 +82,7 @@ class Data
 			return closest;
 		}
 
+
 		Tile *	getTile(int id);
 		Tile *	getTile(int x, int y);
 		std::vector<Tile*>	getTilesIf(TileCondition is_matching);

@@ -3,7 +3,7 @@
 
 
 Tile::Tile(size_t nb_of_tiles)
-: isolated(false), left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999)
+: is_mid_tile(false), isolated(false), left(nullptr), right(nullptr), top(nullptr), bottom(nullptr), distances(nb_of_tiles, 999)
 {
 
 }
@@ -56,9 +56,10 @@ void Tile::debug() const
 	std::cerr << std::endl;
 	::debug("x :", x);
 	::debug("y :", y);
-	::debug("scrap_amount :", scrap_amount);
-	::debug("owner :", owner);
-	::debug("units :", units);
+	::debug("dist_to_start", dist_to_start);
+	// ::debug("scrap_amount :", scrap_amount);
+	// ::debug("owner :", owner);
+	// ::debug("units :", units);
 	std::cerr << std::endl;
 }
 
