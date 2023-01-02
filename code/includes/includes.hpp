@@ -35,7 +35,8 @@ using TileCondition = std::function<bool(Tile& t)>;
 using TileCompare = std::function<bool(Tile& t1, Tile& t2)>;
 using TilePtrCompare = std::function<bool(Tile* t1, Tile* t2)>;
 
-static constexpr int DEBUG = 1;
+static constexpr int DEBUG_COUT = 0;
+static constexpr int DEBUG_SPREAD = 1;
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
 static constexpr int NONE = -1;

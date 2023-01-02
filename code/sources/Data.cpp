@@ -129,6 +129,33 @@ void	Data::setMidTiles()
 	}
 }
 
+// int		Data::getRecycleValue(Tile& tile)
+// {
+// 	int scrap_amount = tile.scrap_amount;
+// 	int value = scrap_amount;
+// 	int owner = tile.owner;
+// 	for (auto& recycler : tile.getNeighbors())
+// 	{
+// 		if (recycler && is)
+// 		{
+// 			if (neighbor->isRecycledBy(owner))
+// 			{
+// 				for ()
+// 			}
+
+// 		}
+// 	}
+// }
+
+// int		Data::getEconomy()
+// {
+// 	int my_economy = my_matter;
+// 	int opp_economy = opp_matter;
+// 	for (auto& tile : tiles)
+// 	{
+// 		int value = tile.units * 10;
+// 	}
+// }
 
 Tile *	Data::getTile(int id)
 {
