@@ -35,8 +35,8 @@ using TileCondition = std::function<bool(Tile& t)>;
 using TileCompare = std::function<bool(Tile& t1, Tile& t2)>;
 using TilePtrCompare = std::function<bool(Tile* t1, Tile* t2)>;
 
-static constexpr int DEBUG_COUT = 0;
-static constexpr int DEBUG_SPREAD = 1;
+static constexpr int DEBUG_COUT = 1;
+static constexpr int DEBUG_SPREAD = 0;
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
 static constexpr int NONE = -1;
@@ -76,13 +76,14 @@ bool	is_recycler(Tile& tile);
 bool	is_walkable(Tile& tile);
 bool	is_mid_tile(Tile& tile);
 bool	is_almost_grass(Tile& tile);
+bool	is_isolated(Tile& tile);
 // bool	is_recycled_by_me(Tile& tile);
 // bool	is_usable_tile(Tile& tile);
 // bool	is_my_empty_tile(Tile& tile);
 // bool	is_empty_opp(Tile& tile);
 
 
-// bool	is_tile(Tile* tile);
+bool	is_tile_ptr(Tile* tile);
 bool	is_usable_tile(Tile* tile);
 bool	is_my_empty_tile(Tile* tile);
 bool	is_empty_opp(Tile* tile);

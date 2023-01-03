@@ -57,6 +57,54 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 		// test voisins prioritaires
 		
 
+// defini mes territoires isolés
+		for (auto &my_tile : d.my_tiles)
+		{
+			if (!my_tile->recycler && !my_tile->isolated)
+			{
+				if (bfs(graph, my_tile->id, is_opp) == -1)
+				{
+					for (auto& visited : graph.visited)
+					{
+						debug("me :", d.tiles[visited]);
+						d.tiles[visited].isolated = true;
+					}
+				}
+			}
+		}
+
+// defini territoires opp isolés
+		for (auto &opp_tile : d.opp_tiles)
+		{
+			if (!opp_tile->recycler && !opp_tile->isolated)
+			{
+				if (bfs(graph, opp_tile->id, is_me) == -1)
+				{
+					for (auto& visited : graph.visited)
+					{
+						d.tiles[visited].isolated = true;
+					}
+				}
+			}
+		}
+		// test
+		int my_value = d.my_matter;
+		int opp_value = d.opp_matter;
+		for (auto& tile : d.tiles)
+		{
+			if (!tile.isolated)
+			{
+				if (is_me(tile))
+					my_value += 10 * tile.units;
+				if (is_opp(tile))
+					opp_value += 10 * tile.units;
+			}
+			my_value += tile.getRecyclingValue(ME);
+			opp_value += tile.getRecyclingValue(OPP);
+		}
+		debug("my_value :", my_value);
+		debug("opp_value :", opp_value);
+
 
 // defense
 		// pour chacune de mes tuiles
@@ -82,7 +130,10 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					}
 					else if (d.my_matter >= 10)
 					{
-						d.build(my_tile);
+						if (required == 1 && (my_value / 10 > opp_value / 10))
+							d.spawn(my_tile, 1);
+						else
+							d.build(my_tile);
 					}
 				}
 				else if (my_tile.potentialSupport() + my_tile.units >= opp_neighbor_units)
@@ -99,7 +150,8 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 				{
 					debug("move support et spawn");
 					move_support_from_neighbor(my_tile, required);
-					d.spawn(my_tile, required);
+					// d.spawn(my_tile, required);
+					d.spawn(my_tile, 1);
 					my_tile.units = std::max(_my_tile->units - opp_neighbor_units, 0);
 				}
 			}
@@ -108,7 +160,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 // defini mes territoires isolés
 		for (auto &my_tile : d.my_tiles)
 		{
-			if (!my_tile->recycler && my_tile->units == 0 && !my_tile->isolated)
+			if (!my_tile->recycler && !my_tile->isolated)
 			{
 				if (bfs(graph, my_tile->id, is_opp) == -1)
 				{
@@ -123,7 +175,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 // defini territoires opp isolés
 		for (auto &opp_tile : d.opp_tiles)
 		{
-			if (!opp_tile->recycler && opp_tile->units == 0 && !opp_tile->isolated)
+			if (!opp_tile->recycler && !opp_tile->isolated)
 			{
 				if (bfs(graph, opp_tile->id, is_me) == -1)
 				{
@@ -135,6 +187,33 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 			}
 		}
 
+
+		// // test spawn proche ennemi
+		// for (auto& my_tile : d.my_tiles)
+		// {
+		// 	if (!my_tile->isNextTo(make_is_matching(is_me, is_unit)))
+		// 	{
+		// 		debug("my_unit :", *my_tile);
+		// 		for (auto& neighbor : my_tile->getNeighbors(make_is_matching(is_neutral)))
+		// 		{
+		// 			debug("neighbor :", *neighbor);
+					
+		// 			if(neighbor->isNextTo(is_opp))
+		// 			{
+		// 				debug("spawn");
+		// 				d.spawn(*my_tile, 1);
+		// 				break ;
+		// 			}
+		// 		}
+
+		// 	}
+
+		// }
+
+		// if ((my_value / 10 < opp_value / 10))
+		// 	d.lost_tiles_mult = 5;
+
+		// d.lost_tiles_mult = std::max(0, 10 + (my_value - opp_value) / 5);
 
 // build investisssement (à ameliorer)
 		if (d.my_matter >= 10)
@@ -164,9 +243,24 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 // defini mes territoires isolés
 		for (auto &my_tile : d.my_tiles)
 		{
-			if (!my_tile->recycler && my_tile->units == 0 && !my_tile->isolated)
+			if (!my_tile->recycler && !my_tile->isolated)
 			{
 				if (bfs(graph, my_tile->id, is_opp) == -1)
+				{
+					for (auto& visited : graph.visited)
+					{
+						d.tiles[visited].isolated = true;
+					}
+				}
+			}
+		}
+
+// defini territoires opp isolés
+		for (auto &opp_tile : d.opp_tiles)
+		{
+			if (!opp_tile->recycler && !opp_tile->isolated)
+			{
+				if (bfs(graph, opp_tile->id, is_me) == -1)
 				{
 					for (auto& visited : graph.visited)
 					{
@@ -415,6 +509,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 
 				}
 			}
+
 		}
    
 // fin spread
@@ -441,7 +536,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					if (closest)
 					{
 						my_unit->move(my_unit->units, *closest);
-						my_unit->units = 0;
+						// my_unit->units = 0;
 					}
 					
 				}
@@ -454,13 +549,22 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					// }
 					if (my_unit->units >= 1)
 					{
-						Tile* closest = d.getClosest(*my_unit, is_opp);
+						Tile* closest = d.getClosest(*my_unit, make_is_matching(is_opp, is_not(is_almost_grass)));
 						// if (!closest)
 						// 	closest = d.getClosest(*my_unit, is_opp);
 						if (closest)
 						{
-							my_unit->move(my_unit->units, *closest);
-							my_unit->units = 0;
+							int dist_to_ennemy = my_unit->getDistanceTo(*closest);
+							for (auto& neighbor : my_unit->getNeighbors(make_is_matching(is_walkable, is_not(is_almost_grass)), is_neutral))
+							{
+								if (neighbor->getDistanceTo(*closest) < dist_to_ennemy)
+								{
+									my_unit->move(my_unit->units, *neighbor);
+									my_unit->units = 0;
+									break;
+								}
+							}
+
 						}
 					}
 				}
@@ -528,7 +632,11 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					Tile* neutral = d.getClosest(my_tile, is_neutral);
 					Tile* unit = d.getClosest(my_tile, is_unit);
 					if (neutral && !unit)
+					{
+						debug("COUCOU");
 						d.spawn(my_tile, 1);
+						my_tile.units = 1;
+					}
 				}
 			}
 		}

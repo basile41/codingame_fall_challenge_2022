@@ -57,6 +57,11 @@ bool	is_almost_grass(Tile& tile)
 	return (is_tile(tile) && tile.scrap_amount == 1 && (tile.in_range_of_recycler || tile.isRecycledBy(ME)));
 }
 
+bool	is_isolated(Tile& tile)
+{
+	return (is_tile(tile) && tile.isolated);
+}
+
 // bool	is_recycled_by_me(Tile& tile)
 // {
 // 	if (is_tile(tile))
@@ -72,23 +77,23 @@ bool	is_almost_grass(Tile& tile)
 
 
 
-bool	is_tile(Tile* tile)
+bool	is_tile_ptr(Tile* tile)
 {
 	return (tile->scrap_amount > 0);
 }
 
 bool	is_usable_tile(Tile* tile)
 {
-	return (is_tile(tile) && !tile->recycler);
+	return (is_tile_ptr(tile) && !tile->recycler);
 }
 
 bool	is_my_empty_tile(Tile* tile)
 {
-	return (is_tile(tile) && is_usable_tile(tile) && tile->owner == ME && !tile->units);
+	return (is_tile_ptr(tile) && is_usable_tile(tile) && tile->owner == ME && !tile->units);
 }
 
 bool	is_empty_opp(Tile* tile)
 {
-	return (is_tile(tile) && is_usable_tile(tile) && tile->owner == OPP && !tile->units);
+	return (is_tile_ptr(tile) && is_usable_tile(tile) && tile->owner == OPP && !tile->units);
 }
 

@@ -84,6 +84,7 @@ void Data::read()
 	if (turn == 0)
 		my_side = (my_tiles[2]->x < width / 2);
 	debug("my_side:", my_side);
+	lost_tiles_mult = 10;
 	
 }
 
@@ -118,7 +119,7 @@ void	Data::setMidTiles()
 			int	dist_to_opp_start = opp_start.getDistanceTo(tile);
 
 			if (dist_to_my_start == dist_to_opp_start ||
-				dist_to_my_start == dist_to_opp_start + 1 )
+				dist_to_my_start == dist_to_opp_start - 1 )
 			{
 				tile.is_mid_tile = true;
 				mid_tiles.push_back(&tile);
@@ -242,13 +243,15 @@ std::vector<int> Data::getNeighbors(int id, bool (*f)(Tile*), int dir_x, int dir
 
 int		Data::getRecycleRent(int id)
 {
-	int	lost_tiles = 5;
+	int	lost_tiles;
 	int scraps_amount = tiles[id].scrap_amount;
 	int rent = scraps_amount;
 
 	if (tiles[id].isRecycledBy(ME))
 		rent -= scraps_amount;
-	for (auto& neighbor : getNeighbors(id, is_tile))
+	std::vector<int> neighbors = getNeighbors(id, is_tile_ptr);
+	lost_tiles = neighbors.size() + 1;
+	for (auto& neighbor : neighbors)
 	{
 		if (tiles[neighbor].isRecycledBy(ME))
 			rent -= scraps_amount;
@@ -260,7 +263,7 @@ int		Data::getRecycleRent(int id)
 		else
 			rent += tiles[neighbor].scrap_amount;
 	}
-	return (rent - lost_tiles * 10);
+	return (rent - lost_tiles * lost_tiles_mult);
 }
 
 int		Data::getDistance(int id1, int id2)

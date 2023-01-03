@@ -124,6 +124,20 @@ std::vector<Tile*>	Tile::getNeighbors(TileCondition is_matching, TileCondition p
 	return (neighbors);
 }
 
+int		Tile::getRecyclingValue(int player)
+{
+	int	max = 0;
+
+	if (owner == player && recycler)
+		return this->scrap_amount;
+	for (auto& neighbor : this->getNeighbors(is_recycler))
+	{
+		if (owner == player && neighbor->scrap_amount > max)
+			max = neighbor->scrap_amount;
+	}
+	return (std::min(max, this->scrap_amount));
+}
+
 int		Tile::countNeighborsUnits(int player)
 {
 	int count = 0;

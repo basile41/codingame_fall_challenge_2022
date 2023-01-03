@@ -5,7 +5,7 @@
 # include "Tile.hpp"
 # include "Graph.hpp"
 
-bool is_tile(Tile *tile);
+// bool is_tile(Tile *tile);
 
 class Data
 {
@@ -22,6 +22,7 @@ class Data
 		int		dir_x;
 		int		dir_y;
 		int		dist_start_to_center;
+		int		lost_tiles_mult;
 
         std::vector<Tile>	tiles;
         std::vector<Tile*>	my_tiles;
