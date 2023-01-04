@@ -82,7 +82,11 @@ void Data::read()
 		}
 	}
 	if (turn == 0)
+	{
 		my_side = (my_tiles[2]->x < width / 2);
+		my_side = (my_tiles[2]->y < height / 2);
+		
+	}
 	debug("my_side:", my_side);
 	lost_tiles_mult = 10;
 	
@@ -119,12 +123,57 @@ void	Data::setMidTiles()
 			int	dist_to_opp_start = opp_start.getDistanceTo(tile);
 
 			if (dist_to_my_start == dist_to_opp_start ||
-				dist_to_my_start == dist_to_opp_start + 1 )
+				dist_to_my_start == dist_to_opp_start - 1 )
 			{
 				tile.is_mid_tile = true;
 				mid_tiles.push_back(&tile);
 				tile.dist_to_start = dist_to_my_start;
 				dist_start_to_center = std::min(dist_start_to_center, dist_to_my_start);
+			}
+		}
+	}
+	circular_symmetry = my_start.y == opp_start.y ? false : true;
+}
+
+void	Data::setMidTilesMulti()
+{
+	dist_start_to_center = 999;
+
+	// set les distances de chaque case à mes cases
+	for (auto& vertex : graph->vertices)
+		vertex.distance = 999;
+	bfs_multi_start(*graph, make_is_matching(is_walkable, is_me));
+	std::set<int> set_dists_to_me(graph->visited);
+	std::vector<int> dists_to_me(size, 999);
+	for (auto& vertex : graph->vertices)
+		dists_to_me[vertex.id] = vertex.distance;
+
+	// set les distances de chaque case aux cases opp
+	for (auto& vertex : graph->vertices)
+		vertex.distance = 999;
+	bfs_multi_start(*graph, make_is_matching(is_walkable, is_opp));
+	std::set<int> set_dists_to_opp(graph->visited);
+	std::vector<int> dists_to_opp(size, 999);
+	for (auto& vertex : graph->vertices)
+		dists_to_opp[vertex.id] = vertex.distance;
+
+	mid_tiles.clear();
+	for (auto& tile : tiles)
+	{
+		if (is_tile(tile) && dists_to_me[tile.id] < 999)
+		{
+			int	dist_to_me = dists_to_me[tile.id];
+			int	dist_to_opp = dists_to_opp[tile.id];
+			// debug("dist_to_me :", dist_to_me);
+			// debug("dist_to_opp :", dist_to_opp);
+
+			if (dist_to_me == dist_to_opp ||
+				dist_to_me == dist_to_opp - 1 )
+			{
+				tile.is_mid_tile = true;
+				mid_tiles.push_back(&tile);
+				tile.dist_to_start = dist_to_me + 1;
+				dist_start_to_center = std::min(dist_start_to_center, dist_to_me);
 			}
 		}
 	}

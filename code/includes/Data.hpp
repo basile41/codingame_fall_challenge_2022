@@ -19,10 +19,12 @@ class Data
 		int		my_matter;
 		int		opp_matter;
 		int		my_side;
+		int		my_side_y;
 		int		dir_x;
 		int		dir_y;
 		int		dist_start_to_center;
 		int		lost_tiles_mult;
+		int		circular_symmetry;
 
         std::vector<Tile>	tiles;
         std::vector<Tile*>	my_tiles;
@@ -63,6 +65,7 @@ class Data
 
 		void	setAllDistance();
 		void	setMidTiles();
+		void	setMidTilesMulti();
 
 		Tile *	closestMidTileTo(Tile& tile, bool accept_targeted = true)
 		{

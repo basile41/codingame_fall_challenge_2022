@@ -3,6 +3,7 @@
 
 # include "includes.hpp"
 
+bool	is_mid_tile(Tile& tile);
 
 class Tile
 {
@@ -77,6 +78,27 @@ class Tile
 				}
 			}
 			return false;
+		}
+
+		bool	isNearestToMid(Tile& tile)
+		{
+			int this_dist = 900;
+			int tile_dist = 900;
+			for (auto& current : *tiles)
+			{
+				if (&current != &tile && current.is_mid_tile)
+				{
+					// ::debug("mid tile :", current);
+					this_dist = std::min(this_dist, this->getDistanceTo(current) - current.dist_to_start + 1);
+					tile_dist = std::min(tile_dist, tile.getDistanceTo(current) - current.dist_to_start);
+					// ::debug("this_dist :", this_dist);
+					// ::debug("tile_dist :", tile_dist);
+				}
+			}
+			if (this_dist < 900)
+				return this_dist <= tile_dist;
+			return
+				false;
 		}
 
 		int		getDistanceTo(int id);

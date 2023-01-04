@@ -174,9 +174,9 @@ int bfs_multi_start(Graph &graph, TileCondition is_start)
 		// Get the next vertex in the queue and visit it
 		Vertex *v = q.front();
 		q.pop();
-		std::cerr << "Visiting vertex " << v->id << std::endl;
-		std::cerr << "distance =  " << v->distance << std::endl;
-		std::cerr << "coord " << graph.tiles->at(v->id) << std::endl;
+		// std::cerr << "Visiting vertex " << v->id << std::endl;
+		// std::cerr << "distance =  " << v->distance << std::endl;
+		// std::cerr << "coord " << graph.tiles->at(v->id) << std::endl;
 		// std::cerr << "owner " << graph.tiles->at(v->id).owner << std::endl;
 
 		// Add all of its unvisited neighbors to the queue
