@@ -51,10 +51,8 @@ int bfs(Graph &graph, int startId)
 
 int bfs(Graph &graph, int startId, TileCondition is_matching)
 {
-	// Initialize a queue for BFS and a set to store visited vertices
 	std::queue<Vertex*> q;
 
-	// Find the starting vertex and add it to the queue
 
 	graph.visited.clear();
 	Vertex *start = graph.findVertex(startId);
@@ -131,6 +129,55 @@ int bfs(Graph &graph, int startId, int targetId, TileCondition is_matching)
 			if (v->distance + graph.tiles->at(v->id).distances.at(targetId) == dist_to_target) // si la case trouvé me rapproche de la cible
 				return (v->id);
 		}
+
+		// Add all of its unvisited neighbors to the queue
+		for (Edge &e : v->edges)
+		{
+			Vertex *to = e.to;
+			if (graph.visited.find(to->id) == graph.visited.end())
+			{
+				to->distance = v->distance + 1;
+				q.push(to);
+				graph.visited.insert(to->id);
+			}
+		}
+	}
+	return (-1);
+}
+
+// a partir de plusieurs tiles
+int bfs_multi_start(Graph &graph, TileCondition is_start)
+{
+	std::queue<Vertex*> q;
+
+
+	graph.visited.clear();
+	for (auto& tile : *graph.tiles)
+	{
+		if (is_start(tile))
+		{
+			Vertex *start = graph.findVertex(tile.id);
+			q.push(start);
+			start->distance = 0;
+			graph.visited.insert(tile.id);
+		}
+	}
+	if (q.empty())
+	{
+		std::cerr << "starts introuvable" << std::endl;
+		return (-1);
+	}
+	compteur_bfs++;
+	
+	while (!q.empty())
+	{
+		// Get the next vertex in the queue and visit it
+		Vertex *v = q.front();
+		q.pop();
+		std::cerr << "Visiting vertex " << v->id << std::endl;
+		std::cerr << "distance =  " << v->distance << std::endl;
+		std::cerr << "coord " << graph.tiles->at(v->id) << std::endl;
+		// std::cerr << "owner " << graph.tiles->at(v->id).owner << std::endl;
 
 		// Add all of its unvisited neighbors to the queue
 		for (Edge &e : v->edges)

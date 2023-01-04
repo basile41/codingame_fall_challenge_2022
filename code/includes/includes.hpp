@@ -36,7 +36,7 @@ using TileCompare = std::function<bool(Tile& t1, Tile& t2)>;
 using TilePtrCompare = std::function<bool(Tile* t1, Tile* t2)>;
 
 static constexpr int DEBUG_COUT = 1;
-static constexpr int DEBUG_SPREAD = 0;
+static constexpr int DEBUG_SPREAD = 1;
 static constexpr int ME = 1;
 static constexpr int OPP = 0;
 static constexpr int NONE = -1;
@@ -91,6 +91,7 @@ bool	is_empty_opp(Tile* tile);
 int		bfs(Graph &graph, int startId);
 int 	bfs(Graph &graph, int startId, TileCondition is_matching);
 int		bfs(Graph &graph, int startId, int targetId, TileCondition is_matching);
+int		bfs_multi_start(Graph &graph, TileCondition is_start);
 
 
 void	init_graph(Data& d, Graph& graph);
