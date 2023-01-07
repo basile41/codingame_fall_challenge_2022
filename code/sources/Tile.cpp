@@ -48,6 +48,7 @@ void	Tile::read()
 	recycled_by_opp = false;
 	recycled_by_me = false;
 	targeted = false;
+	is_mid_tile = false;
 }
 
 void Tile::debug() const

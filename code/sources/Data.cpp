@@ -123,7 +123,7 @@ void	Data::setMidTiles()
 			int	dist_to_opp_start = opp_start.getDistanceTo(tile);
 
 			if (dist_to_my_start == dist_to_opp_start ||
-				dist_to_my_start == dist_to_opp_start - 1 )
+				dist_to_my_start == dist_to_opp_start + 1 )
 			{
 				tile.is_mid_tile = true;
 				mid_tiles.push_back(&tile);
@@ -168,7 +168,7 @@ void	Data::setMidTilesMulti()
 			// debug("dist_to_opp :", dist_to_opp);
 
 			if (dist_to_me == dist_to_opp ||
-				dist_to_me == dist_to_opp - 1 )
+				dist_to_me == dist_to_opp + 1 )
 			{
 				tile.is_mid_tile = true;
 				mid_tiles.push_back(&tile);

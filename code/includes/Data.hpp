@@ -69,18 +69,21 @@ class Data
 
 		Tile *	closestMidTileTo(Tile& tile, bool accept_targeted = true)
 		{
+
 			Tile*	closest = nullptr;
 			int dist_min = 999;
 			for (auto& mid_tile : mid_tiles)
 			{
 				if (is_tile(*mid_tile) && (accept_targeted || mid_tile->owner != TARGETED) && !is_recycler(*mid_tile) )
 				{
+// debug("coucou1");
 					int dist = tile.getDistanceTo(*mid_tile) - mid_tile->dist_to_start;
 					if (dist < dist_min)
 					{
 						dist_min = dist;
 						closest = mid_tile;
 					}
+// debug("coucou2");
 				}
 			}
 			return closest;

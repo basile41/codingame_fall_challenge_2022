@@ -100,7 +100,6 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 		}
 
 		// test new bfs
-		bfs_multi_start(graph, make_is_matching(is_me, is_not(is_recycler)));
 		// for (auto& visited : graph.visited)
 		// {
 		// 	d.tiles[visited]
@@ -152,7 +151,84 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					else if (d.my_matter >= 10)
 					{
 						if (required == 1 && (my_value / 10 >= opp_value / 10))
+						{
 							d.spawn(my_tile, 1);
+							my_tile.def_units = my_tile.units;
+							my_tile.units = 0;
+						}
+						else
+							d.build(my_tile);
+					}
+				}
+				if (DEBUG_DEF)debug("my_tile.units", my_tile.units);
+				if (DEBUG_DEF)debug("my_tile.def_units", my_tile.def_units);
+			}
+		}
+		d.setMidTilesMulti();
+
+		
+// defini mes territoires isolés
+		for (auto &my_tile : d.my_tiles)
+		{
+			if (!my_tile->recycler && !my_tile->isolated)
+			{
+				if (bfs(graph, my_tile->id, is_opp) == -1)
+				{
+					for (auto& visited : graph.visited)
+					{
+						d.tiles[visited].isolated = true;
+					}
+				}
+			}
+		}
+
+// defini territoires opp isolés
+		for (auto &opp_tile : d.opp_tiles)
+		{
+			if (!opp_tile->recycler && !opp_tile->isolated)
+			{
+				if (bfs(graph, opp_tile->id, is_me) == -1)
+				{
+					for (auto& visited : graph.visited)
+					{
+						d.tiles[visited].isolated = true;
+					}
+				}
+			}
+		}
+
+
+// defense
+		// pour chacune de mes tuiles
+		for (auto& _my_tile : d.my_tiles) 
+		{
+			Tile &	my_tile = *_my_tile;
+
+			if (is_recycler(my_tile))
+				continue ;
+			if (my_tile.isNextTo( make_is_matching(is_opp, is_unit) ) && !is_almost_grass(my_tile))
+			{
+				// d.lost_tiles_mult = 20;
+				if (DEBUG_DEF)debug("my_tile", my_tile);
+				int opp_neighbor_units = my_tile.countNeighborsUnits(OPP);
+				int required = opp_neighbor_units - my_tile.units;
+				if (my_tile.can_build && !my_tile.isNextTo(is_neutral))
+				{
+					if (DEBUG_DEF)debug("can_build");
+					if (0)// si valable de build -> build (à définir)
+					{}
+					else if (my_tile.potentialSupport() >= opp_neighbor_units)
+					{
+						move_support_from_neighbor(my_tile, opp_neighbor_units);
+					}
+					else if (d.my_matter >= 10)
+					{
+						if (required == 1 && (my_value / 10 >= opp_value / 10))
+						{
+							d.spawn(my_tile, 1);
+							my_tile.def_units = my_tile.units;
+							my_tile.units = 0;
+						}
 						else
 							d.build(my_tile);
 					}
@@ -167,26 +243,27 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					my_tile.def_units = old_units - my_tile.units;
 
 				}
-				else if (d.my_matter / 10 >= required)
+				else if (d.my_matter >= 10)
 				{
-					int old_units = my_tile.units;
+					// int old_units = my_tile.units;
 					if (DEBUG_DEF)debug("move support et spawn");
 					move_support_from_neighbor(my_tile, required);
-					d.spawn(my_tile, required);
-					// d.spawn(my_tile, 1);
-					my_tile.units = std::max(_my_tile->units - opp_neighbor_units, 0);
-					my_tile.def_units = old_units - my_tile.units;
+					// d.spawn(my_tile, required);
+					d.spawn(my_tile, 1);
+					my_tile.def_units = my_tile.units;
+					my_tile.units = 0;
 				}
 				if (DEBUG_DEF)debug("my_tile.units", my_tile.units);
 				if (DEBUG_DEF)debug("my_tile.def_units", my_tile.def_units);
 			}
-			if (my_tile.isNextTo(is_neutral) && my_tile.def_units >= 1)
-			{
-				my_tile.units++;
-				my_tile.def_units--;
-			}
+			// if (d.my_matter >= 10 && my_tile.isNextTo(is_neutral) && my_tile.def_units >= 1)
+			// {
+			// 	d.spawn(my_tile, 1);
+			// 	my_tile.units++;
+			// 	my_tile.def_units--;
+			// }
 		}
-
+		
 // defini mes territoires isolés
 		for (auto &my_tile : d.my_tiles)
 		{
@@ -252,7 +329,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 			int max_rent_id;
 			for (auto& my_tile : d.my_tiles)
 			{
-				if (my_tile->units == 0 && !my_tile->isolated && !is_recycler(*my_tile))
+				if (my_tile->can_build && my_tile->units == 0 && !my_tile->isolated && !is_recycler(*my_tile))
 				{
 					int rent = d.getRecycleRent(my_tile->id);
 
@@ -269,6 +346,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 				d.my_matter -= 10;
 			}
 		}
+
 
 // defini mes territoires isolés
 		for (auto &my_tile : d.my_tiles)
@@ -337,7 +415,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 				parents.push_back(my_unit);
 			}
 		}
-		if (DEBUG_SPREAD)debug("nombre de parents", parents.size());
+		debug("nombre de parents", parents.size());
 		if (parents.size() == 3)
 		{
 			first_unit = parents[0]->id;
@@ -378,9 +456,29 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 			head_unit = parents[0]->id;
 			if (DEBUG_SPREAD)debug("head_unit" , d.tiles.at(head_unit));
 		}
-
 		std::sort(d.my_units.begin(), d.my_units.end(), comp_dist_to_mid);
 		std::sort(d.my_tiles.begin(), d.my_tiles.end(), comp_dist_to_mid);
+
+		std::sort(d.my_tiles.begin(), d.my_tiles.end(), [&](Tile* t1, Tile* t2)->bool
+		{
+			Tile* c1 = d.closestMidTileTo(*t1);
+			Tile* c2 = d.closestMidTileTo(*t2);
+			if (c1 == nullptr || c2 == nullptr)
+				return false;
+			int d1 = t1->getDistanceTo(*c1) - c1->dist_to_start + 1;
+			int d2 = t2->getDistanceTo(*c2) - c2->dist_to_start + 1;
+			if (d1 == 0 && d2 != 0)
+				return true;
+			return false;
+
+			
+			// Tile* c1 = d.closestMidTileTo(*t1);
+			// Tile* c2 = d.closestMidTileTo(*t2);
+			// if (!c1 || !c2)
+			// 	return false;
+			// return (c1->dist_to_start < c2->dist_to_start);
+		});
+
 
 		for (auto& mid_tile : d.mid_tiles)
 		{
@@ -389,8 +487,24 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 
 // spread
 
-		std::random_shuffle(d.my_tiles.begin(), d.my_tiles.begin() + parents.size());
-		std::random_shuffle(d.my_units.begin(), d.my_units.begin() + parents.size());
+		// std::random_shuffle(d.my_tiles.begin(), d.my_tiles.begin() + parents.size());
+
+		std::sort(d.my_tiles.begin(), d.my_tiles.begin() + parents.size(), [&](Tile* t1, Tile* t2)->bool
+		{
+			int neighbors_units1 = 0;
+			int neighbors_units2 = 0;
+			for (auto& nei : t1->getNeighbors(make_is_matching(is_me, is_unit)))
+				neighbors_units1 += nei->units;
+			debug("t1:");
+			debug(*t1, neighbors_units1);
+			for (auto& nei : t2->getNeighbors(make_is_matching(is_me, is_unit)))
+				neighbors_units2 += nei->units;
+			debug("t2:");
+			debug(*t2, neighbors_units2);
+			return neighbors_units1 < neighbors_units2;
+		});
+
+		// std::random_shuffle(d.my_units.begin(), d.my_units.begin() + parents.size());
 		// if (d.my_side_y)
 		// {
 		// 	TilePtrCompare comp = [](Tile* t1, Tile* t2)->bool
@@ -411,9 +525,11 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 		// }
 
 
-		for (auto& my_unit : d.my_units)
+		for (auto& my_unit : d.my_tiles)
 		{
+// debug("my_unit", *my_unit);
 			Tile*	closest_mid_to_my_unit = d.closestMidTileTo(*my_unit);
+// debug("apres");
 
 			if (DEBUG_SPREAD)debug("my_unit :", *my_unit);
 
@@ -465,7 +581,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 			}
 			else if (my_unit->id == head_unit)
 			{
-				std::sort(neighbors.begin(), neighbors.end(), comp_dist_to_mid);
+				// std::sort(neighbors.begin(), neighbors.end(), comp_dist_to_mid);
 			}
 			// if (my_unit->id == last_unit || my_unit->id == first_unit) //test
 			// {
@@ -529,7 +645,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					// if (neighbor->isNearestThan(*my_unit, is_mid_tile))
 					if (neighbor->isNearestToMid(*my_unit))
 					{
-						
+						if (DEBUG_SPREAD)debug(*neighbor, "is nearest");
 						if (DEBUG_SPREAD)debug("doit etre egal à turn pour spawn : ", my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1);
 						if (my_unit->getDistanceTo(*closest_mid_to_my_unit) - closest_mid_to_my_unit->dist_to_start + 1 == 0)
 						{
@@ -579,27 +695,28 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 				}
 			}
 // en cours
-			if (my_unit->units >= 1)
-			{
-				auto neighbors = my_unit->getNeighbors(is_tile, [&](Tile& tile)->bool
-				{
-					return (tile.x == my_unit->x);
-				});
-				for (auto& neighbor : neighbors)
-				{
-					if (neighbor->isNearestToMid(*my_unit) && !my_unit->isolated)
-					{
-						my_unit->move(my_unit->units, *neighbor);
-						my_unit->units = 0;
-					}
+			// if (my_unit->units >= 1)
+			// {
+			// 	auto neighbors = my_unit->getNeighbors(is_walkable, [&](Tile& tile)->bool
+			// 	{
+			// 		return (tile.x == my_unit->x);
+			// 	});
+			// 	for (auto& neighbor : neighbors)
+			// 	{
+			// 		if (!is_almost_grass(*neighbor) && neighbor->isNearestToMid(*my_unit) && !my_unit->isolated)
+			// 		{
+			// 			debug(*neighbor, "isNearestToMid (apres spread)");
+			// 			my_unit->move(my_unit->units, *neighbor);
+			// 			my_unit->units = 0;
+			// 		}
 
-				}
+			// 	}
 				
 
-			}
+			// }
 
 		}
-   
+
 // fin spread
 
 		// while (d.my_matter >= 10)
@@ -721,7 +838,7 @@ std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_c
 					Tile* unit = d.getClosest(my_tile, is_unit);
 					if (neutral && !unit)
 					{
-						debug("COUCOU");
+						// debug("COUCOU");
 						d.spawn(my_tile, 1);
 						my_tile.units = 1;
 					}
